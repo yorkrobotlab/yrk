@@ -22,8 +22,14 @@ YRL039_BUS              = 14                                                    
 YRL040_BUS              = 13                                                    #Bus YRL040 [3.3V] I2C devoices are attached to
 
 #Display settings
-OLED_BUS                = 12                                                    #The bus which the OLED module is attached to [i2c_10 on YRL040 with Pi 4]
+OLED_BUS                = 12                                                    #The bus which the OLED module is attached to [i2c_12 on YRL040 with Pi 4]
 DISPLAY_ROTATED         = False                                                 #Set to true if the OLED module is rotated to flip image
+
+#Fonts [Good resource for fonts to try: http://www.dafont.com/bitmap.php]
+SMALL_MONO = '/home/pi/yrk/font/mono_small.ttf'
+SMALL_FONT = '/home/pi/yrk/font/small_font.ttf'
+SMALL_BOLD = '/home/pi/yrk/font/small_bold.ttf'
+LARGE_FONT = '/home/pi/yrk/font/yrk_font.ttf'
 
 #Audio settings
 AUDIO_VOLUME = 90

@@ -1,14 +1,36 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-#
 # Version 0.1
-#
 # Functions for the GPIO expansion and switches outputs from U13 [PCA9555 16-way GPIO]
-#
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
 # James Hilder, York Robotics Laboratory, Oct 2019
 
+"""
+.. module:: gpio
+   :synopsis: Functions for the I2C GPIO Expansion
+
+.. moduleauthor:: James Hilder <github.com/jah128>
+
+The YRL040 PCB contains two PCA9555 16-bit GPIO expanders, one is connected to
+the switches [see ``switch`` module], the other provides 8 user GPIO pins on
+a 0.1" pitch 4x2 header.  It also uses 4 GPIO input to detect fault conditions
+in the four H-bridge motor drivers, and 1 more to provide the motor fault LED
+output.  Another input is used to provide the "kill switch" input, which might
+be configured to stop all running code etc.
+
+The final pair of GPIO outputs are used to provide an NMOS-driven 5V and 12V
+switched output.  These outputs can be used to turn on a DC load [fused at 1A],
+but note the negative terminal is not a common ground with the main PCB and
+should not be connected.  This makes the output most suited to drive things such
+as a buzzer or lamp, or potentially a relay.  The 5V output is connected to the
+5V_AUX supply [though will be slightly under 5V due to the FET losses]; the 12V
+is connected to V_IN.
+
+PCA5555 GPIO Expander Datasheet:
+https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
+
+"""
 import yrk.settings as s
 import smbus2 #I2C function
 import time, logging, os

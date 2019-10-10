@@ -1,13 +1,30 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-#
 # Version 0.1
-#
 # Functions for the TCA6507 LED driver [front RGB LEDs]
-#
 # Datasheet: http://www.ti.com/lit/ds/symlink/tca6507.pdf
 # James Hilder, York Robotics Laboratory, Oct 2019
+
+"""
+.. module:: led
+   :synopsis: Functions for the RGB LEDs
+
+.. moduleauthor:: James Hilder <github.com/jah128>
+
+The YRL040 PCB contains a TCA6507 7-way I2C LED driver.  This IC is connected
+to the two RGB LEDs at either corner of the top of the PCB, plus one extra
+output is routed to the top-left expansion pin at the top of the PCB.
+
+The TCA6507 allows 2 programmable channels of PWM output, allowing blinks and
+pulse effects to be programmed using a single I2C message.  However, as this
+is limited to 2 channels, full independent RGB control of the LEDs is not
+possible.  To simplify use, this module contains a number of functions to
+allow programmed single colours and animated effects to be shown on the LEDs.
+
+TCA6507 Data Sheet:
+https://www.ti.com/lit/ds/symlink/tca6507.pdf
+"""
 
 import logging, threading, time, os, smbus2                                                      #General Python imports
 import yrk.settings as s
@@ -39,6 +56,16 @@ solid_colours = [['Off',0x00,0x00],
  		 ['Others',0x40,0x40]  ]
 
 def timed_animation(index, time):
+    """Starts a ``Timer`` thread to run animation for given duration then stop
+
+    Use carefully as no checking is done in the case of repeated calls
+
+    Args:
+        index (int): The body_animations entry to use [range 0-8]
+        time (float): The duration in seconds before calling ``stop_animation``
+
+    """
+
     timer = Timer(time, stop_animation)
     animation(index)
     timer.start()
@@ -49,54 +76,103 @@ def get_brightness_int():
     return b_int;
 
 def animation(index):
+    """Displays the given animation from ``body_animations`` list
+
+
+    Args:
+        index (int): The ``solid_colours`` entry to use [range 0-8]
+
+    """
+
     logging.debug("Playing animation index %d" % index)
     body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, body_animations[index][1].extend([get_brightness_int(),0x0F,0x11]))
 
 def stop_animation():
+    """Stops the animation [by calling ``animation(0)``]"""
     animation(0)
 
 def set_right_colour_solid(index):
-  if index < 0 or index > len(solid_colours):
-    logging.warning("Requested colour outside range; ignoring.")
-  else:
-    logging.debug("Setting right LED to %s" % solid_colours[index][0])
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [solid_colours[index][2],0x00,solid_colours[index][2],0x44,0x44,0x44,0x44,0x00,get_brightness_int(),brightness,0x11])
+    """Sets the right LED to a solid colour
+
+    Args:
+        index (int): The solid_colours entry to use [range 0-8]
+
+    """
+
+    if index < 0 or index > len(solid_colours):
+        logging.warning("Requested colour outside range; ignoring.")
+    else:
+        logging.debug("Setting right LED to %s" % solid_colours[index][0])
+        body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [solid_colours[index][2],0x00,solid_colours[index][2],0x44,0x44,0x44,0x44,0x00,get_brightness_int(),brightness,0x11])
 
 def set_left_colour_solid(index):
-  if index < 0 or index > len(solid_colours):
-    logging.warning("Requested colour outside range; ignoring.")
-  else:
-    logging.debug("Setting left LED to %s" % solid_colours[index][0])
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [solid_colours[index][1],0x00,solid_colours[index][1],0x44,0x44,0x44,0x44,0x00,get_brightness_int(),brightness,0x11])
+    """Sets the left LED to a solid colour
+
+    Args:
+        index (int): The solid_colours entry to use [range 0-8]
+
+    """
+
+    if index < 0 or index > len(solid_colours):
+        logging.warning("Requested colour outside range; ignoring.")
+    else:
+        logging.debug("Setting left LED to %s" % solid_colours[index][0])
+        body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [solid_colours[index][1],0x00,solid_colours[index][1],0x44,0x44,0x44,0x44,0x00,get_brightness_int(),brightness,0x11])
 
 
-def set_right_colour_pulse(index,speed=0x04):                                     #Speed range 0 to 8
-  if index < 0 or index > len(solid_colours):
-    logging.warning("Requested colour outside range; ignoring.")
-  else:
-    logging.debug("Setting right LED to pulse %s" % solid_colours[index][0])
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [0x00,solid_colours[index][2],solid_colours[index][2],speed,speed<<1,speed,speed,speed,get_brightness_int(),0x0F,0x11])
+def set_right_colour_pulse(index,speed=0x04):
+    """Sets the right LED to pulse, at given speed and colour
 
-def set_left_colour_pulse(index,speed=0x04):                                  #Speed range 0 to 15
-  if index < 0 or index > len(solid_colours):
-    logging.warning("Requested colour outside range; ignoring.")
-  else:
-    logging.debug("Setting left LED to pulse %s" % solid_colours[index][0])
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [0x00,solid_colours[index][1],solid_colours[index][1],speed,speed<<1,speed,speed,speed,get_brightness_int(),0x0F,0x11])
+    Args:
+        index (int): The solid_colours entry to use [range 0-8]
+        speed (int): The speed of the pulse [range 0-15]
+    """
 
-def set_colour_pulse(index,speed=0x04):                                         #Speed range 0 to 15
-  if index < 0 or index > len(solid_colours):
-    logging.warning("Requested colour outside range; ignoring.")
-  else:
-    logging.debug("Setting LEDs to pulse %s" % solid_colours[index][0])
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [0x00,solid_colours[index][1]+solid_colours[index][2],solid_colours[index][1]+solid_colours[index][2],speed,speed<<1,speed,speed,speed,get_brightness_int(),0x0F,0x11])
+    if index < 0 or index > len(solid_colours):
+        logging.warning("Requested colour outside range; ignoring.")
+    else:
+        logging.debug("Setting right LED to pulse %s" % solid_colours[index][0])
+        body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [0x00,solid_colours[index][2],solid_colours[index][2],speed,speed<<1,speed,speed,speed,get_brightness_int(),0x0F,0x11])
+
+def set_left_colour_pulse(index,speed=0x04):
+    """Sets the left LED to pulse, at given speed and colour
+
+    Args:
+        index (int): The solid_colours entry to use [range 0-8]
+        speed (int): The speed of the pulse [range 0-15]
+    """
+    if index < 0 or index > len(solid_colours):
+        logging.warning("Requested colour outside range; ignoring.")
+    else:
+        logging.debug("Setting left LED to pulse %s" % solid_colours[index][0])
+        body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [0x00,solid_colours[index][1],solid_colours[index][1],speed,speed<<1,speed,speed,speed,get_brightness_int(),0x0F,0x11])
+
+def set_colour_pulse(index,speed=0x04):
+    """Sets both LEDs to pulse, at given speed and colour
+
+    Args:
+        index (int): The solid_colours entry to use [range 0-8]
+        speed (int): The speed of the pulse [range 0-15]
+    """
+
+    if index < 0 or index > len(solid_colours):
+        logging.warning("Requested colour outside range; ignoring.")
+    else:
+        logging.debug("Setting LEDs to pulse %s" % solid_colours[index][0])
+        body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [0x00,solid_colours[index][1]+solid_colours[index][2],solid_colours[index][1]+solid_colours[index][2],speed,speed<<1,speed,speed,speed,get_brightness_int(),0x0F,0x11])
 
 def set_colour_solid(index):
-  if index < 0 or index > len(solid_colours):
-    logging.warning("Requested colour outside range; ignoring.")
-  else:
-    logging.debug("Setting LEDs to %s" % solid_colours[index][0])
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [solid_colours[index][1]+solid_colours[index][2],0x00,solid_colours[index][1]+solid_colours[index][2],0x44,0x44,0x44,0x44,0x44,get_brightness_int(),brightness,0xFF])
+    """Sets both LEDs to solid colour
+
+    Args:
+        index (int): The solid_colours entry to use [range 0-8]
+    """
+
+    if index < 0 or index > len(solid_colours):
+        logging.warning("Requested colour outside range; ignoring.")
+    else:
+        logging.debug("Setting LEDs to %s" % solid_colours[index][0])
+        body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, [solid_colours[index][1]+solid_colours[index][2],0x00,solid_colours[index][1]+solid_colours[index][2],0x44,0x44,0x44,0x44,0x44,get_brightness_int(),brightness,0xFF])
 
 
 #Command line test [will run when led.py is run directly]

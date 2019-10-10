@@ -25,17 +25,16 @@ import yrk.settings as s
 
 from PIL import Image, ImageDraw, ImageFont
 
-OLED_BUS = s.OLED_BUS  # The display is attached to bus 8, which translates to bus i2c_8
+OLED_BUS = s.OLED_BUS  # The display is attached to bus 5, which translates to RPi4 bus i2c_12
 
 disp = Adafruit_SSD1306.SSD1306_128_32(rst=None,i2c_bus=OLED_BUS)
 
-# Load default font.
-mono_small = ImageFont.truetype('font/mono_small.ttf',8)
-small_font = ImageFont.truetype('font/small_font.ttf', 8)
-small_font_bold = ImageFont.truetype('font/small_bold.ttf', 8)
-medium_font = ImageFont.truetype('font/yrk_font.ttf',16)
-large_font = ImageFont.truetype('font/yrk_font.ttf',24)
-# Good resource for fonts to try: http://www.dafont.com/bitmap.php
+#Fonts [filepaths in settings.py]
+mono_small = ImageFont.truetype(s.SMALL_MONO,8)
+small_font = ImageFont.truetype(s.SMALL_FONT, 8)
+small_font_bold = ImageFont.truetype(s.SMALL_BOLD, 8)
+medium_font = ImageFont.truetype(s.LARGE_FONT,16)
+large_font = ImageFont.truetype(s.LARGE_FONT,24)
 
 # Create blank image for drawing.
 # Make sure to create image with mode '1' for 1-bit color.
@@ -233,7 +232,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     logging.info("York Robotics Kit: Display Test")
     init_display()
-    display_image_file("images/yrl-white.pbm")
+    display_image_file("/home/pi/yrk/images/yrl-white.pbm")
     time.sleep(0.6)
     two_line_text_wrapped("IP Address:",get_ip())
     os._exit(1)

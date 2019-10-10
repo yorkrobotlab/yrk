@@ -1,14 +1,27 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-#
 # Version 0.1
-#
 # Functions for the switches and buttons connected to U4 [PCA9555 16-way GPIO]
-#
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
 # James Hilder, York Robotics Laboratory, Oct 2019
 
+"""
+.. module:: switch
+   :synopsis: Functions for the switches and buttons
+
+.. moduleauthor:: James Hilder <github.com/jah128>
+
+This module contains function for the switch GPIO expander [one of two PCA9555
+GPIO expanders on the YRL040 PCB].  The switch module, at the bottom of the
+YRL040 PCB, contains a 4-way DIP switch with associated LEDs, a 5-way
+directional switch and 2 push-buttons at either side.  The green power LED is
+also connected to the GPIO expander.
+
+PCA5555 GPIO Expander Datasheet:
+https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
+
+"""
 import yrk.settings as s
 import smbus2 #I2C function
 import time, logging, os

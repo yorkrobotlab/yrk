@@ -2,10 +2,26 @@
 # York Robotics Kit Python API
 #
 # Version 0.1
-#
 # Functions for communicating with the YRL039 Power Supply Board
-#
 # James Hilder, York Robotics Laboratory, Oct 2019
+
+"""
+.. module:: power
+   :synopsis: Functions for communicating with the YRL039 power supply PCB
+
+.. moduleauthor:: James Hilder <github.com/jah128>
+
+The YRL039 PCB provides the main power supplies for the YRK, using a pair of
+3A, 5V buck [*step-down*] converters.  These power supplies are controlled by
+a ATMega328 microcontroller, which also monitors the voltage of the supply plus
+the voltages and currents of both 5V outputs.  The ATMega also monitors the
+temperature of the PCB and controls a small fan, positioned directly above the
+CPU of the Raspberry Pi.
+
+This module provides the functions to read the data values from the ATMega
+microcontroller [using the I2C bus].
+
+"""
 
 import logging, threading, time, random, os, smbus2                             #General Python imports
 from smbus2 import i2c_msg
@@ -23,6 +39,7 @@ pcb_temp=0                                                                      
 # The YRL039 frequently reads voltages, current and temperature.  This can be read invidividually but it is recommended
 # to use the read_all_values() function then the appropriate getter
 def read_all_values():
+    """Reads and stores all voltage, current and temperature readings in a single i2c request"""
     global v_batt, v_pi,v_aux,i_pi,i_aux,pcb_temp
     try:
       i2c_bus.write_byte(s.YRL039_ADDRESS,8)
@@ -39,21 +56,27 @@ def read_all_values():
       logging.error("Error reading register 8 from YRL039 (address %X bus %d)" % (s.YRL039_ADDRESS,s.YRL039_BUS))
 
 def get_battery_voltage():
+    """Returns battery voltage (float) stored on last call of ``read_all_values``"""
     return v_batt;
 
 def get_pi_voltage():
+    """Returns 5V_PI voltage (float) stored on last call of ``read_all_values``"""
     return v_pi;
 
 def get_aux_voltage():
+    """Returns 5V_AUX voltage (float) stored on last call of ``read_all_values``"""
     return v_aux;
 
 def get_pi_current():
+    """Returns 5V_PI current (float) stored on last call of ``read_all_values``"""
     return i_pi;
 
 def get_aux_current():
+    """Returns 5V_AUX current (float) stored on last call of ``read_all_values``"""
     return i_aux;
 
 def get_pcb_temperature():
+    """Returns PCB temperature (float) stored on last call of ``read_all_values``"""
     return pcb_temp;
 
 def read_battery_voltage():

@@ -1,13 +1,33 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-#
 # Version 0.1
-#
 # Functions for the i2c based motor drivers
-#
 # Datasheet: http://www.ti.com/lit/ds/symlink/drv8830.pdf
 # James Hilder, York Robotics Laboratory, Oct 2019
+
+"""
+.. module:: motors
+   :synopsis: Functions for H-Bridge motor drivers
+
+.. moduleauthor:: James Hilder <github.com/jah128>
+
+The YRL040 PCB contains 4 DRV8830 H-Bridge motor drivers, powered from the
+5V_AUX supply.   Each driver has an 800mA current limit.  It is primarily
+intended for use with small brushed DC motors such as the 12mm micro-metal
+gear motors available from a number of suppliers including MFA Como, Pimoroni
+and Pololu.  Motors are connected using the push-level Wago terminals at either
+side of the YRL040 PCB.
+
+The motor driver allows the effective motor voltage [in either direction] to be
+programmed using an I2C message.  It also allows the motor to be put in a coast
+[*high-impendance*] or brake [*short-circuit*] state.  The ICs contain fault
+[*over-current* and *over-temperature*] conditions to trigger a logic low
+output, which is connected the GPIO expander [see ``gpio``].
+
+DRV8830 Data Sheet:
+https://www.ti.com/lit/ds/symlink/drv8830.pdf
+"""
 
 import yrk.settings as s
 import smbus2, logging
@@ -21,10 +41,28 @@ brake_states = [False,False,False,False]
 motor_speeds = [0.0,0.0,0.0,0.0]
 
 def get_brake_state(motor):
-  return brake_states[motor]
+    """Gets current brake state of the given motor driver
+
+    Args:
+        motor (int): The motor driver [*range 0-3*]
+
+    Returns:
+        bool: True if the motor is in brake [*short-circuit*] state
+    """
+
+    return brake_states[motor]
 
 def get_motor_speed(motor):
-  return motor_speeds[motor]
+    """Gets current speed of the given motor driver
+
+    Args:
+        motor (int): The motor driver [*range 0-3*]
+
+    Returns:
+        float: The target speed of the motor [*range -1.0 to 1.0*]
+    """
+
+    return motor_speeds[motor]
 
 #Check requested speed ranges from -1 to 1
 def check_bounds(speed):
@@ -40,6 +78,14 @@ def get_integer_speed(speed):
 
 #Set motor speed to given, speed -1.0 to 1.0, zero will put in coast
 def set_motor_speed(motor,speed):
+  """Sets the motor to given speed
+
+  Args:
+    motor (int): The motor driver [*range 0-3*]
+    speed (float): The target speed for the motor [*range -1.0 to 1.0*]
+
+  """
+
   global brake_states,motor_speeds
   speed=check_bounds(speed)
   byte = 0
@@ -62,11 +108,23 @@ def set_motor_speed(motor,speed):
 
 #Set all motors to coast
 def stop_all_motors():
+    """Sets all 4 motor drivers to coast state"""
     for motor in range(4):
         set_motor_speed(motor,0)
 
 #Brake motor 1
 def brake_motor(motor):
+  """Turns on brake mode for given motor
+
+  Brake state effectively short-circuits the motor windings, resisting motion.
+  This is different to coast state [*high-impendance*] which is set by calling
+  ``set_motor_speed(motor,0)``
+
+  Args:
+    motor (int): The motor driver [*range 0-3*]
+
+  """
+
   global brake_states
   brake_states[motor]=True
   byte = 0x03  # IN1 & IN2 both high = brake
