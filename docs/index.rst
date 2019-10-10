@@ -61,8 +61,8 @@ yrk.utils
   :members:
 
 
-Indices and tables
-==================
+Index
+=====
 
 * :ref:`genindex`
 * :ref:`modindex`

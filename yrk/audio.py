@@ -11,7 +11,20 @@
 
 .. moduleauthor:: James Hilder <github.com/jah128>
 
+The YRL040 PCB contains a TPA2005 class-D 1.4W mono audio amplifier.  The audio
+output from the Raspberry Pi is sent as a PWM signal over GPIO pin 12 and a
+logic-high on GPIO pin 16 enables the amplifier.   PWM audio is relatively poor
+in audio quality and inherently noisy, so it is generally preferable to disable
+the output when audio is not being played.
 
+The audio module is designed to run continuously and uses a seperate execution
+thread to process a queue of stored audio commands.  The audio setup is started
+by calling the ``setup_audio`` function.  To add a sound to the playback queue
+either ``play_audio_file``, which plays a .mp3 or .wav file, or ``say``, which
+uses the ``espeak`` program to read a message.
+
+TPA2005 Data Sheet:
+https://www.ti.com/lit/ds/symlink/tpa2005d1.pdf
 """
 
 import RPi.GPIO as GPIO, threading, logging, subprocess, os, time
@@ -96,11 +109,9 @@ def unmute():
     GPIO.output(s.AUDIO_ON_GPIO_PIN,GPIO.HIGH)
 
 def IF_say(message):
-    """Calls espeak subprocess to 'say' message"""
     subprocess.call(["espeak",message])
 
 def IF_play_audio_file(file):
-    """Calls aplay or mpg123 to play audio file"""
     global running_process
     filename,ext=os.path.splitext(file)
     #print ext

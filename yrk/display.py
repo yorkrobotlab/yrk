@@ -7,8 +7,13 @@
 # James Hilder, York Robotics Laboratory, Oct 2019
 
 """
-.. module:: adc
-   :synopsis: Functions for reading from the ADS7830 8-bit Analog:Digital Converter
+.. module:: display
+   :synopsis: Functions for displaying text and graphics on the OLED display
+
+There is a header on the YRL040 PCB to which an Adafruit PiOLED 128x32 pixel
+display can be attached, either directly or via a ribbon cable.  This module
+augments the functionality of the ``Adafruit_SSD1306`` library, providing
+functions to display graphics and text on the display.
 
 .. moduleauthor:: James Hilder <github.com/jah128>
 
