@@ -20,6 +20,7 @@ YRL039_ADDRESS          = 0x39                                                  
 #Note about busses:  RPi4 models have extra i2c busses so numbering for switch starts at I2C_7 [I2C_3 on Pi3 and earlier]
 YRL039_BUS              = 14                                                    #Bus YRL039 Power Supply board's ATMega is attached to
 YRL040_BUS              = 13                                                    #Bus YRL040 [3.3V] I2C devoices are attached to
+I2C_5V_BUS              = 11                                                    #The PWM driver and the Arduino are on the 5V I2C Bus [bus 4 on switch]
 
 #Display settings
 OLED_BUS                = 12                                                    #The bus which the OLED module is attached to [i2c_12 on YRL040 with Pi 4]
@@ -38,6 +39,9 @@ AUDIO_ON_GPIO_PIN = 16                                                          
 #Motor Settings
 MOTOR_ADDRESSES         = [0x60,0x62,0x66,0x68]
 ADC_NAMES               = ['ADC 0','ADC 1','ADC 2','ADC 3','ADC 4','ADC 5','POT','ADC 7']
+
+#PWM settings
+PWM_ADDRESS             = 0x40                                                  #PCA9685 - Address 0x40 Bus 4 [5V bus]
 
 #Define sensor type in this list.  Should have 8 entries.  Note 7th is for potentiometer
 #ADC_MODELS              = ['2y0a21','2y0a41','voltage','raw','raw','raw','inv_pct','raw']

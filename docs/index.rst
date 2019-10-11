@@ -44,6 +44,11 @@ yrk.power
 .. automodule:: yrk.power
   :members:
 
+yrk.pwm
+=======
+  .. automodule:: yrk.pwm
+    :members:
+    
 yrk.settings
 ============
 .. automodule:: yrk.settings
@@ -65,9 +70,9 @@ examples.console
   :members:
 
 examples.potmotor
-================
+=================
 .. automodule:: examples.potmotor
-:members:
+  :members:
 
 examples.stop
 ================

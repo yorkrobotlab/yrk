@@ -233,6 +233,7 @@ if __name__ == "__main__":
     logging.info("York Robotics Kit: Display Test")
     init_display()
     display_image_file("/home/pi/yrk/images/yrl-white.pbm")
-    time.sleep(0.6)
+    #time.sleep(0.6)
+    time.sleep(4)
     two_line_text_wrapped("IP Address:",get_ip())
     os._exit(1)
