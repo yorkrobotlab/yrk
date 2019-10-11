@@ -1,12 +1,27 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-#
 # Version 0.1
-#
 # Curses console: A console program for the York Robotics Kit
-#
 # James Hilder, York Robotics Laboratory, Oct 2019
+
+"""
+.. module:: console
+   :synopsis: A curses terminal-based console allowing hardware control
+
+.. moduleauthor:: James Hilder <github.com/jah128>
+
+A terminal-based console that provides feedback on sensor information and allows
+keyboard based control of actuators. The console.py example uses the curses
+library to allow console over-writing.  It uses line-drawing characters, which
+may not render correctly on default settings on PuTTy; there are work-arounds
+for this [KiTTy is worth looking at as an alternative].
+
+To run::
+
+   python console.py
+
+"""
 
 import yrk.settings as s,yrk.utils as utils, yrk.adc as adc, yrk.motors as motors
 import yrk.power as power, yrk.switch as switch, yrk.gpio as gpio
@@ -105,124 +120,126 @@ def take_readings():
     else: motor_box.addstr(1,39,"MOTOR 2")
     if(selected_index == 3): motor_box.addstr(1,58,"MOTOR 3",curses.A_STANDOUT)
     else: motor_box.addstr(1,58,"MOTOR 3")
+
+
 #Program code
+if __name__ == "__main__":
+    #Parse command line using Argument Parser
+    parser = argparse.ArgumentParser("curses_console.py : Display YRK data in a curses-based console")
+    parser.add_argument("-s","--silent",help="Disable non-error std-out messages",action="store_true")
+    args = parser.parse_args()
 
-#Parse command line using Argument Parser
-parser = argparse.ArgumentParser("curses_console.py : Display YRK data in a curses-based console")
-parser.add_argument("-s","--silent",help="Disable non-error std-out messages",action="store_true")
-args = parser.parse_args()
+    #Now initial setup is complete, we can create the main curses window
+    stdscr = curses.initscr() # Create the curses console window
+    curses.cbreak()	# Lets program react to keypresses without Enter
+    curses.noecho()	# Turn off automatic echoing of keys to screen
+    curses.curs_set(False) # Turn off cursor
+    curses.start_color() # Enable colour mode in console
+    curses.use_default_colors() # Use curses defaults
+    stdscr.box() #Box arond whole screen
+    stdscr.immedok(True)
+    stdscr.refresh()
 
-#Now initial setup is complete, we can create the main curses window
-stdscr = curses.initscr() # Create the curses console window
-curses.cbreak()	# Lets program react to keypresses without Enter
-curses.noecho()	# Turn off automatic echoing of keys to screen
-curses.curs_set(False) # Turn off cursor
-curses.start_color() # Enable colour mode in console
-curses.use_default_colors() # Use curses defaults
-stdscr.box() #Box arond whole screen
-stdscr.immedok(True)
-stdscr.refresh()
+    #Create a box at the top of page for title
+    title_box = curses.newwin(3,76,1,2) #Height,width,Y,X
+    title_box.box()
+    title_box.addstr (1,1,'York Robotics Kit Console                    York Robotics Laboratory 2019',curses.A_STANDOUT)
+    title_box.immedok(True)
+    title_box.refresh()
 
-#Create a box at the top of page for title
-title_box = curses.newwin(3,76,1,2) #Height,width,Y,X
-title_box.box()
-title_box.addstr (1,1,'York Robotics Kit Console                    York Robotics Laboratory 2019',curses.A_STANDOUT)
-title_box.immedok(True)
-title_box.refresh()
+    #Create a box to display power information
+    power_box = curses.newwin(3,76,4,2) #Height,width,Y,X
+    power_box.box()
+    power_box.addstr (1,1,'Vin:--.--V Vpi:-.--V Vaux:-.--V  Ipi:-.--A Iaux:-.--A  PCB:--.-C CPU:--.-C')
+    power_box.immedok(True)
+    power_box.refresh()
+    stdscr.addstr (4,3,'Power Status')
 
-#Create a box to display power information
-power_box = curses.newwin(3,76,4,2) #Height,width,Y,X
-power_box.box()
-power_box.addstr (1,1,'Vin:--.--V Vpi:-.--V Vaux:-.--V  Ipi:-.--A Iaux:-.--A  PCB:--.-C CPU:--.-C')
-power_box.immedok(True)
-power_box.refresh()
-stdscr.addstr (4,3,'Power Status')
+    #Create a box to display ADC information
+    adc_box = curses.newwin(3,76,7,2)
+    adc_box.box()
+    adc_box.addstr (1,1,'0: ---   1: ---   2: ---   3: ---   4: ---   5: ---   6: ---   7: ---')
+    adc_box.immedok(True)
+    adc_box.refresh()
+    stdscr.addstr (7,3,'Raw ADC Values')
+    adc_box.refresh()
 
-#Create a box to display ADC information
-adc_box = curses.newwin(3,76,7,2)
-adc_box.box()
-adc_box.addstr (1,1,'0: ---   1: ---   2: ---   3: ---   4: ---   5: ---   6: ---   7: ---')
-adc_box.immedok(True)
-adc_box.refresh()
-stdscr.addstr (7,3,'Raw ADC Values')
-adc_box.refresh()
+    sw_0_box = curses.newwin(3,10,10,2)
+    sw_dip0_box = curses.newwin(3,7,10,12)
+    sw_dip1_box = curses.newwin(3,7,10,19)
+    sw_dip2_box = curses.newwin(3,7,10,26)
+    sw_dip3_box = curses.newwin(3,7,10,33)
 
-sw_0_box = curses.newwin(3,10,10,2)
-sw_dip0_box = curses.newwin(3,7,10,12)
-sw_dip1_box = curses.newwin(3,7,10,19)
-sw_dip2_box = curses.newwin(3,7,10,26)
-sw_dip3_box = curses.newwin(3,7,10,33)
+    sw_up_box = curses.newwin(3,4,10,40)
+    sw_down_box = curses.newwin(3,6,10,44)
+    sw_left_box = curses.newwin(3,6,10,50)
+    sw_right_box = curses.newwin(3,7,10,56)
+    sw_push_box = curses.newwin(3,6,10,63)
+    sw_1_box = curses.newwin(3,10,10,69)
 
-sw_up_box = curses.newwin(3,4,10,40)
-sw_down_box = curses.newwin(3,6,10,44)
-sw_left_box = curses.newwin(3,6,10,50)
-sw_right_box = curses.newwin(3,7,10,56)
-sw_push_box = curses.newwin(3,6,10,63)
-sw_1_box = curses.newwin(3,10,10,69)
+    sw_0_box.box()
+    sw_dip0_box.box()
+    sw_dip1_box.box()
+    sw_dip2_box.box()
+    sw_dip3_box.box()
+    sw_up_box.box()
+    sw_down_box.box()
+    sw_left_box.box()
+    sw_right_box.box()
+    sw_push_box.box()
+    sw_1_box.box()
 
-sw_0_box.box()
-sw_dip0_box.box()
-sw_dip1_box.box()
-sw_dip2_box.box()
-sw_dip3_box.box()
-sw_up_box.box()
-sw_down_box.box()
-sw_left_box.box()
-sw_right_box.box()
-sw_push_box.box()
-sw_1_box.box()
+    sw_0_box.immedok(True)
+    sw_0_box.refresh()
+    sw_dip0_box.immedok(True)
+    sw_dip1_box.immedok(True)
+    sw_dip2_box.immedok(True)
+    sw_dip3_box.immedok(True)
+    sw_up_box.immedok(True)
+    sw_down_box.immedok(True)
+    sw_left_box.immedok(True)
+    sw_right_box.immedok(True)
+    sw_push_box.immedok(True)
+    sw_1_box.immedok(True)
 
-sw_0_box.immedok(True)
-sw_0_box.refresh()
-sw_dip0_box.immedok(True)
-sw_dip1_box.immedok(True)
-sw_dip2_box.immedok(True)
-sw_dip3_box.immedok(True)
-sw_up_box.immedok(True)
-sw_down_box.immedok(True)
-sw_left_box.immedok(True)
-sw_right_box.immedok(True)
-sw_push_box.immedok(True)
-sw_1_box.immedok(True)
+    sw_dip0_box.refresh()
+    sw_dip1_box.refresh()
+    sw_dip2_box.refresh()
+    sw_dip3_box.refresh()
+    sw_up_box.refresh()
+    sw_down_box.refresh()
+    sw_left_box.refresh()
+    sw_right_box.refresh()
+    sw_push_box.refresh()
+    sw_1_box.refresh()
 
-sw_dip0_box.refresh()
-sw_dip1_box.refresh()
-sw_dip2_box.refresh()
-sw_dip3_box.refresh()
-sw_up_box.refresh()
-sw_down_box.refresh()
-sw_left_box.refresh()
-sw_right_box.refresh()
-sw_push_box.refresh()
-sw_1_box.refresh()
+    #Create a box to display motor information
+    motor_box = curses.newwin(3,76,13,2)
+    motor_box.box()
+    motor_box.addstr (1,1,'Motor 0: XX.XX     Motor 1: XX.XX     Motor 2: XX.XX     Motor 3: XX.XX')
+    motor_box.immedok(True)
+    motor_box.refresh()
+    stdscr.addstr (13,3,'Motor Speeds')
 
-#Create a box to display motor information
-motor_box = curses.newwin(3,76,13,2)
-motor_box.box()
-motor_box.addstr (1,1,'Motor 0: XX.XX     Motor 1: XX.XX     Motor 2: XX.XX     Motor 3: XX.XX')
-motor_box.immedok(True)
-motor_box.refresh()
-stdscr.addstr (13,3,'Motor Speeds')
+    #Start the sensor polling thread
+    sensor_thread = threading.Thread(target=take_readings,args=())
+    sensor_thread.start()
 
-#Start the sensor polling thread
-sensor_thread = threading.Thread(target=take_readings,args=())
-sensor_thread.start()
+    #Keyboard listener
+    while (running == True):
+      c=stdscr.getch()
+      if c==ord('q'): running = False
+      elif c==ord('x'):
+          selected_index += 1
+          if selected_index == 4: selected_index = 0
+      elif c==ord('z'):
+          selected_index -= 1
+          if selected_index < 0: selected_index = 3
+      elif c==ord('a'):
+          if(selected_index > -1 and selected_index < 4):
+              motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)+0.1)
+      elif c==ord('s'):
+          if(selected_index > -1 and selected_index < 4):
+              motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)-0.1)
 
-#Keyboard listener
-while (running == True):
-  c=stdscr.getch()
-  if c==ord('q'): running = False
-  elif c==ord('x'):
-      selected_index += 1
-      if selected_index == 4: selected_index = 0
-  elif c==ord('z'):
-      selected_index -= 1
-      if selected_index < 0: selected_index = 3
-  elif c==ord('a'):
-      if(selected_index > -1 and selected_index < 4):
-          motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)+0.1)
-  elif c==ord('s'):
-      if(selected_index > -1 and selected_index < 4):
-          motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)-0.1)
-
-end_curses("FIN.") # Graceful exit; restores terminal modes
+    end_curses("FIN.") # Graceful exit; restores terminal modes

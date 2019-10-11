@@ -70,6 +70,21 @@ def timed_animation(index, time):
     animation(index)
     timer.start()
 
+def set_brightness(brightness_int):
+    """Sets stored target brightness value to given value
+
+    NB Brightness is only changed on next call to set led
+
+    Args:
+        brightness_int (int): The target brightness [range 0-15]
+
+    """
+    
+    global brightness
+    if(brightness_int < 0): brightness = 0
+    elif(brightness_int > 15): brightness = 15
+    else:brightness = brightness_int
+
 def get_brightness_int():
     b_int = (brightness << 4) + brightness
     logging.debug("Setting brightness to %X" % b_int)
