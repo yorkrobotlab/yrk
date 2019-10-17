@@ -17,6 +17,7 @@ library to allow console over-writing.  It uses line-drawing characters, which
 may not render correctly on default settings on PuTTy; there are work-arounds
 for this [KiTTy is worth looking at as an alternative].
 
+
 To run::
 
    python console.py
@@ -69,12 +70,12 @@ def take_readings():
         adc_box.addstr(1,4+(i*9),"%03d" % adc.read_adc(i));
         time.sleep(0.02)
     switch_register = switch.read_input_registers()
-    if(switch_register & 0x400): sw_1_box.addstr(1,1,'SWITCH 1',curses.A_STANDOUT)
-    else: sw_1_box.addstr(1,1,'SWITCH 1')
-    if(switch_register & 0x200): sw_0_box.addstr(1,1,'SWITCH 0',curses.A_STANDOUT)
-    else: sw_0_box.addstr(1,1,'SWITCH 0')
-    if(switch_register & 0x100): sw_push_box.addstr(1,1,'PUSH',curses.A_STANDOUT)
-    else: sw_push_box.addstr(1,1,'PUSH')
+    if(switch_register & 0x400): sw_1_box.addstr(1,1,'PUSH 1',curses.A_STANDOUT)
+    else: sw_1_box.addstr(1,1,'PUSH 1')
+    if(switch_register & 0x200): sw_0_box.addstr(1,1,'PUSH 0',curses.A_STANDOUT)
+    else: sw_0_box.addstr(1,1,'PUSH 0')
+    if(switch_register & 0x100): sw_push_box.addstr(1,1,'CENTER',curses.A_STANDOUT)
+    else: sw_push_box.addstr(1,1,'CENTER')
     if(switch_register & 0x080): sw_right_box.addstr(1,1,'RIGHT',curses.A_STANDOUT)
     else: sw_right_box.addstr(1,1,'RIGHT')
     if(switch_register & 0x040): sw_left_box.addstr(1,1,'LEFT',curses.A_STANDOUT)
@@ -164,18 +165,18 @@ if __name__ == "__main__":
     stdscr.addstr (7,3,'Raw ADC Values')
     adc_box.refresh()
 
-    sw_0_box = curses.newwin(3,10,10,2)
-    sw_dip0_box = curses.newwin(3,7,10,12)
-    sw_dip1_box = curses.newwin(3,7,10,19)
-    sw_dip2_box = curses.newwin(3,7,10,26)
-    sw_dip3_box = curses.newwin(3,7,10,33)
+    sw_0_box = curses.newwin(3,8,19,2)
+    sw_dip0_box = curses.newwin(3,7,19,10)
+    sw_dip1_box = curses.newwin(3,7,19,17)
+    sw_dip2_box = curses.newwin(3,7,19,24)
+    sw_dip3_box = curses.newwin(3,7,19,31)
 
-    sw_up_box = curses.newwin(3,4,10,40)
-    sw_down_box = curses.newwin(3,6,10,44)
-    sw_left_box = curses.newwin(3,6,10,50)
-    sw_right_box = curses.newwin(3,7,10,56)
-    sw_push_box = curses.newwin(3,6,10,63)
-    sw_1_box = curses.newwin(3,10,10,69)
+    sw_up_box = curses.newwin(3,4,19,38)
+    sw_down_box = curses.newwin(3,6,19,42)
+    sw_left_box = curses.newwin(3,6,19,48)
+    sw_right_box = curses.newwin(3,7,19,54)
+    sw_push_box = curses.newwin(3,8,19,61)
+    sw_1_box = curses.newwin(3,8,19,69)
 
     sw_0_box.box()
     sw_dip0_box.box()
@@ -213,6 +214,16 @@ if __name__ == "__main__":
     sw_push_box.refresh()
     sw_1_box.refresh()
 
+    #Create a box to display servo information
+    servo_box = curses.newwin(3,76,10,2)
+    servo_box.box()
+    servo_box.addstr (1,1,'S0:XXXX  S1:XXXX  S2: XXXX  S3: XXXX  S4:XXXX  S5:XXXX  S6: XXXX  S7: XXXX')
+    servo_box.immedok(True)
+    servo_box.refresh()
+    stdscr.addstr (10,3,'Servo Periods')
+
+
+
     #Create a box to display motor information
     motor_box = curses.newwin(3,76,13,2)
     motor_box.box()
@@ -228,17 +239,18 @@ if __name__ == "__main__":
     #Keyboard listener
     while (running == True):
       c=stdscr.getch()
+      stdscr.addstr(16,10,'Key %s    ' % (c))
       if c==ord('q'): running = False
-      elif c==ord('x'):
+      elif c==curses.KEY_RIGHT or c==67:
           selected_index += 1
           if selected_index == 4: selected_index = 0
-      elif c==ord('z'):
+      elif c==curses.KEY_LEFT or c==68:
           selected_index -= 1
           if selected_index < 0: selected_index = 3
-      elif c==ord('a'):
+      elif c==curses.KEY_UP or c==65:
           if(selected_index > -1 and selected_index < 4):
               motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)+0.1)
-      elif c==ord('s'):
+      elif c==curses.KEY_DOWN or c==66:
           if(selected_index > -1 and selected_index < 4):
               motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)-0.1)
 
