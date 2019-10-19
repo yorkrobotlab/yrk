@@ -79,7 +79,7 @@ def set_brightness(brightness_int):
         brightness_int (int): The target brightness [range 0-15]
 
     """
-    
+
     global brightness
     if(brightness_int < 0): brightness = 0
     elif(brightness_int > 15): brightness = 15
@@ -95,12 +95,16 @@ def animation(index):
 
 
     Args:
-        index (int): The ``solid_colours`` entry to use [range 0-8]
+        index (int): The ``body_animations`` entry to use [range 0-8]
 
     """
 
-    logging.debug("Playing animation index %d" % index)
-    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, body_animations[index][1].extend([get_brightness_int(),0x0F,0x11]))
+    m_start = body_animations[index][1]
+    b_ness = [get_brightness_int(),0x0F,0x11]
+    message = m_start + b_ness
+    #.append(b_ness)
+    logging.debug("Playing animation index %d %s %s" % (index,message,b_ness))
+    body_bus.write_i2c_block_data(s.RGB_LED_ADDRESS, LED_REGISTER, message)
 
 def stop_animation():
     """Stops the animation [by calling ``animation(0)``]"""
@@ -198,7 +202,7 @@ if __name__ == "__main__":
      brightness = i
      #set_left_colour_pulse(5)
      #set_right_colour_solid((i+1) % 8)
-     set_left_colour_solid(5)
+     animation(5)
 
      time.sleep(0.2);
  os._exit(1)
