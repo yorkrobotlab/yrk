@@ -14,8 +14,11 @@
 This module provides functions for controlling the PCA9685 16-channel 12-bit
 PWM driver, which is primarily intended for use with analog servo motors.
 
-This has been quickly put together and the existing Adafruit library looks a
-much more polished, elegant way of doing it, but requires circuitpython.
+This module has been quickly put relatively quickly to provide functionality for
+[exclusively for] use with analog servos.  If wanted for other purposes it would
+be worth investigating the existing Adafruit library, which is more polished,
+but requires circuitpython amongst other libraries and might take a bit of
+adaptation to work using the switched i2c bus.
 
 PCA9685 Datasheet
 https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf
@@ -35,30 +38,75 @@ PRESCALE_REG = 0xFE
 
 #Mode 2 Reg:
 #RES:RES:RES:INVRT:OCH:OUTDRV:OUTNE
+
 pwm_bus = smbus2.SMBus(s.I2C_5V_BUS)
 pwm_freq_hertz = 0;
 
+#Calculate the nearest duty cycle value to target on-period in seconds, returns int [0-4095] for use with set_duty_cycle_raw()
 def calculate_nearest_duty_cycle_to_period(period_seconds: float) -> int:
-    #Calculate the nearest duty cycle value to target on-period in seconds, returns int [0-4095] for use with set_duty_cycle_raw()
+    """Calculate the value for raw cycle for a given period
+
+    Args:
+        period_seconds (float): The target on-time in seconds.
+
+    Returns:
+        int: The raw duty cycle value [*for use with set_duty_cycle_raw*]
+
+    """
+
     if pwm_freq_hertz == 0: return 0
     pwm_period = 1.0 / pwm_freq_hertz
     if period_seconds <= 0: return 0
     if period_seconds >= pwm_period: return 4095
     return int( ( period_seconds * 4095 ) / pwm_period)
 
+#Estimate the on-time based on the raw dutycycle value.  Return value in seconds
 def estimate_on_time(dutycycle_raw: int) -> float:
-    #Estimate the on-time based on the raw dutycycle value.  Return value in seconds
+    """Estimate the on-time based on the raw duty cycle value
+
+    Args:
+        dutycycle_raw (int): The target duty-cycle [*range 0 - 4095*]
+
+    Returns:
+        float: The approximate on-time value in seconds
+
+    """
+
     return (dutycycle_raw / (4096 * pwm_freq_hertz))
 
 def set_pwm_frequency(freq: float):
+    """Sets the PWM frequency
+
+    The PWM will be set as close as it can be to the requested frequency.  It
+    calculates the closest ``prescale`` value and calls ``set_prescale_value``
+    with this value.  All outputs have the same frequency.
+
+    Args:
+        freq (float): The target frequency in hertz [*effective range 24 - 1526*]
+
+    """
+
     #Prescale value = round(25MHz/4096 X Freq) - 1
     psv = round(6103.516/freq) - 1
-    if psv>0xFF: psv=0xFF
-    if psv<3: psv=3
     set_prescale_value(psv)
 
 def set_prescale_value(psv: int):
+    """Sets the prescale register to set the PWM frequency
+
+    PWM frequency approximately equal to ``6104 / (psv + 1)``
+
+    Args:
+        psv (int): The target prescale register value [*range 3-255*]
+
+    """
+
     global pwm_freq_hertz
+    if psv>0xFF:
+        logging.warning("PWM prescale value out of range (%d), setting to 255" % psv)
+        psv=0xFF
+    if psv<3:
+        logging.warning("PWM prescale value out of range (%d), setting to 3" % psv)
+        psv=3
     pwm_freq_hertz = 6103.516/(psv+1)
     logging.debug("Prescale Value: %d  Actual Frequency: %4.1f Hz" % (psv,pwm_freq_hertz))
     #Prescale can only be reset when SLEEP register is set to 1
@@ -66,7 +114,15 @@ def set_prescale_value(psv: int):
     pwm_bus.write_byte_data(s.PWM_ADDRESS, PRESCALE_REG, psv)
     set_normal_mode()
 
-def set_duty_cycle(output: int,dutycycle_pct):
+def set_duty_cycle(output: int,dutycycle_pct: float):
+    """Sets the duty cycle (on period) of a PWM output as a percentage
+
+    Args:
+        output (int):  The servo output to use [*range 0-15*]
+        dutycycle_pct (float): The percentage [*0-100*] of on-time
+
+    """
+
     #Each output has a 4-byte register to set delay time and duty-cycle
     #We will fix delay time to zero
     logging.debug("Request duty cycle %2.2f%% on output %d" % (dutycycle_pct,output))
@@ -78,6 +134,14 @@ def set_duty_cycle(output: int,dutycycle_pct):
         set_duty_cycle_raw(output,off_time)
 
 def set_duty_cycle_raw(output: int,dutycycle_raw: int):
+    """Sets the raw on-period value for a given PWM output
+
+    Args:
+        output (int):  The servo output to use [*range 0-15*]
+        dutycycle_raw (int): The on-time period [*range 0-4095*]
+
+    """
+
     if output < 0 or output > 15 or dutycycle_raw < 0 or dutycycle_raw > 4095:
         logging.error("PWM request outside valid range (%d,%d)" % (output,dutycycle_raw))
     register_address = 6 + (output * 4)
@@ -88,11 +152,15 @@ def set_duty_cycle_raw(output: int,dutycycle_raw: int):
 
 #Set MODE1 register to 0x10 [sleep state]
 def set_sleep_mode():
+    """Enables sleep mode on PWM driver"""
+
     logging.debug("Setting sleep mode on PCA9685 PWM driver")
     pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x10)
 
 #Set MODE1 register to 0x20 [default on state, auto-increment]
 def set_normal_mode():
+    """Disables sleep mode on PWM driver"""
+
     logging.debug("Setting normal mode on PCA9685 PWM driver")
     pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x20)
 

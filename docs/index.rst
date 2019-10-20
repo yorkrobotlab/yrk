@@ -48,7 +48,7 @@ yrk.pwm
 =======
   .. automodule:: yrk.pwm
     :members:
-    
+
 yrk.settings
 ============
 .. automodule:: yrk.settings
@@ -72,6 +72,11 @@ examples.console
 examples.potmotor
 =================
 .. automodule:: examples.potmotor
+  :members:
+
+examples.potservo
+=================
+.. automodule:: examples.potservo
   :members:
 
 examples.stop

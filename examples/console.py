@@ -62,6 +62,7 @@ def update_servo_period(output,increment):
     servo_box.addstr(1,(8*output) + 4,"%4d" % display_value, curses.A_BOLD)
     pwm.set_duty_cycle_raw(output,pwm_periods[output])
 
+
 def update_led_brightness(increment):
     global led_brightness
     led_brightness += increment
