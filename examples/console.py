@@ -26,6 +26,7 @@ To run::
 
 import yrk.settings as s,yrk.utils as utils, yrk.adc as adc, yrk.motors as motors
 import yrk.power as power, yrk.switch as switch, yrk.gpio as gpio, yrk.led as led
+import yrk.pwm as pwm
 import curses 	  # For fancy console over-writing
 import os         # For call i2cdetect for sensor detection
 import threading  # Run the sensor polling as a thread
@@ -41,10 +42,25 @@ led_index = 0
 led_brightness = 3
 switched_out_5V = True #Init as true but will be toggled when toggle_5V_SO is called
 switched_out_12V = True
+display_pwm_as_microseconds = True
+
+pwm.set_pwm_frequency(50.0)
+default_servo_period_raw = pwm.calculate_nearest_duty_cycle_to_period(0.0015)
+pwm_periods = [default_servo_period_raw] * 8
 
 gpio.setup_user_gpio()
 switch.setup_switch_gpio()
 motors.stop_all_motors()
+
+def update_servo_period(output,increment):
+    global pwm_periods
+    pwm_periods[output] += increment
+    if pwm_periods[output] > 4095: pwm_periods[output] = 4095
+    if pwm_periods[output] < 0: pwm_periods[output] = 0
+    display_value = pwm_periods[output]
+    if display_pwm_as_microseconds: display_value = int(1000000 * pwm.estimate_on_time(pwm_periods[output]))
+    servo_box.addstr(1,(8*output) + 4,"%4d" % display_value, curses.A_BOLD)
+    pwm.set_duty_cycle_raw(output,pwm_periods[output])
 
 def update_led_brightness(increment):
     global led_brightness
@@ -173,20 +189,23 @@ def take_readings():
     else: so_box.addstr(1,1,"12V:")
     if(selected_index == 8): servo_box.addstr(1,1,"S0:",curses.A_STANDOUT)
     else: servo_box.addstr(1,1,"S0:")
-    if(selected_index == 9): servo_box.addstr(1,10,"S1:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,10,"S1:")
-    if(selected_index == 10): servo_box.addstr(1,19,"S2:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,19,"S2:")
-    if(selected_index == 11): servo_box.addstr(1,28,"S3:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,28,"S3:")
-    if(selected_index == 12): servo_box.addstr(1,37,"S4:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,37,"S4:")
-    if(selected_index == 13): servo_box.addstr(1,46,"S5:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,46,"S5:")
-    if(selected_index == 14): servo_box.addstr(1,55,"S6:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,55,"S6:")
-    if(selected_index == 15): servo_box.addstr(1,64,"S7:",curses.A_STANDOUT)
-    else: servo_box.addstr(1,64,"S7:")
+    if(selected_index == 9): servo_box.addstr(1,9,"S1:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,9,"S1:")
+    if(selected_index == 10): servo_box.addstr(1,17,"S2:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,17,"S2:")
+    if(selected_index == 11): servo_box.addstr(1,25,"S3:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,25,"S3:")
+    if(selected_index == 12): servo_box.addstr(1,33,"S4:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,33,"S4:")
+    if(selected_index == 13): servo_box.addstr(1,41,"S5:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,41,"S5:")
+    if(selected_index == 14): servo_box.addstr(1,49,"S6:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,49,"S6:")
+    if(selected_index == 15): servo_box.addstr(1,57,"S7:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,57,"S7:")
+    if(selected_index == 16): servo_box.addstr(1,65,"Freq:",curses.A_STANDOUT)
+    else: servo_box.addstr(1,65,"Freq:")
+
 #Program code
 if __name__ == "__main__":
     #Parse command line using Argument Parser
@@ -204,7 +223,7 @@ if __name__ == "__main__":
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
     stdscr.attron(curses.color_pair(3)  | curses.A_BOLD)
     stdscr.box() #Box arond whole screen
     stdscr.immedok(True)
@@ -303,10 +322,12 @@ if __name__ == "__main__":
     servo_box = curses.newwin(3,76,10,2)
     servo_box.attron(curses.color_pair(3))
     servo_box.box()
-    servo_box.addstr (1,1,'S0:XXXX  S1:XXXX  S2:XXXX  S3:XXXX  S4:XXXX  S5:XXXX  S6:XXXX  S7:XXXX',curses.color_pair(0))
+    #servo_box.addstr (1,1,'S0:XXXX  S1:XXXX  S2:XXXX  S3:XXXX  S4:XXXX  S5:XXXX  S6:XXXX  S7:XXXX',curses.color_pair(0))
     servo_box.immedok(True)
     servo_box.refresh()
-    stdscr.addstr (10,3,'Servo Periods')
+    if display_pwm_as_microseconds: stdscr.addstr (10,3,'Servo Period uS')
+    else: stdscr.addstr (10,3,'Servo Raw Value')
+
 
 
 
@@ -350,10 +371,10 @@ if __name__ == "__main__":
       if c==ord('q'): running = False
       elif c==curses.KEY_RIGHT or c==67:
           selected_index += 1
-          if selected_index == 16: selected_index = 0
+          if selected_index == 17: selected_index = 0
       elif c==curses.KEY_LEFT or c==68:
           selected_index -= 1
-          if selected_index < 0: selected_index = 15
+          if selected_index < 0: selected_index = 16
       elif c==curses.KEY_UP or c==65:
           if(selected_index > -1 and selected_index < 4):
               motors.set_motor_speed(selected_index,motors.get_motor_speed(selected_index)+0.1)
@@ -361,6 +382,8 @@ if __name__ == "__main__":
           if selected_index == 5: update_led_brightness(1)
           if selected_index == 6: toggle_12V_SO()
           if selected_index == 7: toggle_5V_SO()
+          if selected_index > 7 and selected_index < 16: update_servo_period(selected_index - 8, 1)
+
 
       elif c==curses.KEY_DOWN or c==66:
           if(selected_index > -1 and selected_index < 4):
@@ -369,5 +392,7 @@ if __name__ == "__main__":
           if selected_index == 5: update_led_brightness(-1)
           if selected_index == 6: toggle_12V_SO()
           if selected_index == 7: toggle_5V_SO()
+          if selected_index > 7 and selected_index < 16: update_servo_period(selected_index - 8, -1)
+
 
     end_curses("FIN.") # Graceful exit; restores terminal modes
