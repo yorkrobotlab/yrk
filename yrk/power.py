@@ -114,8 +114,9 @@ def read_int_register(register):
 
 #Command line test prints out voltage, current and temperature readings [will run when yrl039.py is run directly]
 if __name__ == "__main__":
- logger = logging.getLogger()
- logger.setLevel(logging.DEBUG)
+ s.init()
+ s.setup_logger("power")
+ logging.info("York Robotics Kit: Power supply monitoring test code")
 
  #This method sends all 6 values as a single 8-byte I2C message
  read_all_values();

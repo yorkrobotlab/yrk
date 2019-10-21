@@ -115,7 +115,8 @@ def init():
 #Test code
 if __name__ == "__main__":
     s.init()
-    logging.info("Switch test code")
+    s.setup_logger("switch")
+    logging.info("York Robotics Kit: Switch test code")
     try:
       # setup_switch_gpio()
       # logging.info("Switch output:{0:016b}".format(read_input_registers()))

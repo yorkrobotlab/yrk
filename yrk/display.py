@@ -231,8 +231,8 @@ def get_ip():
 
 #Command line test [will run when display.py is run directly]
 if __name__ == "__main__":
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    s.init()
+    s.setup_logger("display")
     logging.info("York Robotics Kit: Display Test")
     init_display()
     display_image_file("/home/pi/yrk/images/yrl-white.pbm")

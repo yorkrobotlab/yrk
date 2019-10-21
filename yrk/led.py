@@ -196,15 +196,14 @@ def set_colour_solid(index):
 
 #Command line test [will run when led.py is run directly]
 if __name__ == "__main__":
- logger = logging.getLogger()
- logger.setLevel(logging.DEBUG)
+ s.init()
+ s.setup_logger("led")
+ logging.info("York Robotics Kit: LED test code")
  for i in range(16):
      brightness = i
-     #set_left_colour_pulse(5)
-     #set_right_colour_solid((i+1) % 8)
-     animation(5)
-
-     time.sleep(0.2);
+     animation((i+1) % 8)
+     time.sleep(0.5);
+ animation(0)
  os._exit(1)
 
 

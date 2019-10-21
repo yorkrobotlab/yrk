@@ -135,6 +135,7 @@ def brake_motor(motor):
 #Test code
 if __name__ == "__main__":
     s.init()
+    s.setup_logger("motors")
     logging.info("York Robotics Kit: Motor test code")
     #EG: Set motor 0 to 50% for 3 seconds
     set_motor_speed(0,0.5)

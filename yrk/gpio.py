@@ -134,6 +134,7 @@ def init():
 #Test code
 if __name__ == "__main__":
     s.init()
+    s.setup_logger("gpio")
     logging.info("York Robotics Kit: User GPIO test code")
     try:
       setup_user_gpio()

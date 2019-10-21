@@ -88,7 +88,8 @@ def get_model_value(raw_value,sensor_model):
 #Test code
 if __name__ == "__main__":
  s.init()
- logging.info("York Robotics Kit: Motor test code")
+ s.setup_logger("adc")
+ logging.info("York Robotics Kit: A\D Converter test code")
  for channel in range (8):
      raw_value = read_adc(channel)
      logging.info(f"Channel {channel} [{s.ADC_NAMES[channel]}]:{raw_value} [{s.ADC_MODELS[channel]}:{get_model_value(raw_value,s.ADC_MODELS[channel])}]")

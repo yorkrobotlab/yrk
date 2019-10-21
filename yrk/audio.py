@@ -32,6 +32,7 @@ import yrk.settings as s
 from queue import *
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(s.AUDIO_ON_GPIO_PIN,GPIO.OUT,initial=GPIO.LOW)
 
 q=Queue()
@@ -168,8 +169,8 @@ audio_thread=threading.Thread(target=audio_queue_thread)
 
 #Command line test [will run when audio.py is run directly]
 if __name__ == "__main__":
- logger = logging.getLogger()
- logger.setLevel(logging.DEBUG)
+ s.init()
+ s.setup_logger("audio")
  logging.info("YRK Audio Test")
  setup_audio()
  play_audio_file(s.AUDIO_FILEPATH+"york-robotics-kit.wav")

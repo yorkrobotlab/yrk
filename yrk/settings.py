@@ -9,11 +9,12 @@
 
 import logging,sys
 
-VERSION_STRING="0.1.051019"
+VERSION_STRING="0.1.221019"
 
-# Set the Python logging level; recommend INFO for deployment and DEBUG for debugging
-LOGGING_MODE = logging.INFO
-#LOGGING_MODE = logging.DEBUG
+# Set the Python logging level for log files; recommend INFO for deployment and DEBUG for debugging
+FILE_LOGGING_MODE = logging.DEBUG
+CONSOLE_LOGGING_MODE = logging.INFO  #Cannot be a lower level than FILE_LOGGING_MODE
+
 
 YRL039_ADDRESS          = 0x39                                                  #The I2C address for the ATMega on the YRL039 Power Supply Board
 
@@ -61,6 +62,7 @@ USER_GPIO_OUTPUT_STATE  = 0x00                                                  
 SWITCH_INTERRUPT_PIN    = 5                                                     #GPIO pin connected to interrupt out of U4-PCA9555 GPIO [switches]
 GPIO_INTERRUPT_PIN      = 6                                                     #GPIO pin connected to interrupt out of U13-PCA9555 GPIO [user]
 
+RAMDISK_FILEPATH = "/mnt/ramdisk"
 AUDIO_FILEPATH = "/home/pi/yrk/wav/"
 IMAGE_FILEPATH = "/home/pi/yrk/images/"
 SHOW_HOSTNAME		= True                                                      #Show hostname with IP address
@@ -143,6 +145,22 @@ program_info_filename="/ramdisk/proginfo"
 program_state_filename="/ramdisk/progstate"
 camera_request_filename="/ramdisk/camerarequest"
 
+import logging
+
+def setup_logger(filename):
+    rootLogger = logging.getLogger()
+    #rootLogger.setLevel(LOGGING_MODE)
+    rootLogger.setLevel(FILE_LOGGING_MODE)
+
+    logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+    consoleFormatter = logging.Formatter("[%(levelname)-1.1s] %(message)s")
+    fileHandler = logging.FileHandler("{0}/{1}.log".format(RAMDISK_FILEPATH, filename))
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(consoleFormatter)
+    consoleHandler.setLevel(CONSOLE_LOGGING_MODE)
+    rootLogger.addHandler(consoleHandler)
 
 def init():
     global use_built_in_dip_functions
@@ -155,5 +173,3 @@ def init():
     initial_led_brightness = 0.3                                                  #Multiplied by max_brightness
     max_brightness = 0.3                                                          #Brightness limit for LEDs.  Range 0-1.  1 is very bright and may cause power\heat issues if not used carefully...
     default_poll_period = POLL_PERIOD
-    logger = logging.getLogger()
-    logger.setLevel(LOGGING_MODE)

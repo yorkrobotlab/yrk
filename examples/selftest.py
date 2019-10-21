@@ -24,6 +24,7 @@ from subprocess import call
 
 major_fail = False
 dip_switch_state = 0
+settings.setup_logger("selftest")
 logging.info("York Robotics Kit Self Test - Ver  %s" % (settings.VERSION_STRING))
 logging.info("HOSTNAME      : %s" % (utils.get_hostname()))
 logging.info("IP ADDRESS    : %s" % (utils.get_ip()))

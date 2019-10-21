@@ -167,8 +167,7 @@ def set_normal_mode():
 #Test code
 if __name__ == "__main__":
  s.init()
- logger = logging.getLogger()
- logger.setLevel(logging.DEBUG)
+ s.setup_logger("pwm")
  logging.info("York Robotics Kit: Servo test code")
  set_pwm_frequency(50)
 
