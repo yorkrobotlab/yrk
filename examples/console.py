@@ -28,6 +28,7 @@ import yrk.settings as s,yrk.utils as utils, yrk.adc as adc, yrk.motors as motor
 import yrk.power as power, yrk.switch as switch, yrk.gpio as gpio, yrk.led as led
 import yrk.pwm as pwm
 import curses 	  # For fancy console over-writing
+from curses import wrapper
 import os         # For call i2cdetect for sensor detection
 import threading  # Run the sensor polling as a thread
 import sys        # For clean system exit
@@ -85,19 +86,6 @@ def toggle_12V_SO():
     gpio.set_switched_output_12V(switched_out_12V)
     if(switched_out_12V): so_box.addstr(1,6,"ON ")
     else: so_box.addstr(1,6,"OFF")
-
-# Function to exit gracefully one curses started
-def end_curses(message):
-  curses.nocbreak()
-  curses.echo()
-  curses.endwin()
-  end_program(message)
-
-#Function to exit program outside of curses
-def end_program(message):
-  running = False
-  print (message)
-  sys.exit(0)
 
 def update_led(increment):
     global led_index
@@ -207,15 +195,11 @@ def take_readings():
     if(selected_index == 16): servo_box.addstr(1,65,"Freq:",curses.A_STANDOUT)
     else: servo_box.addstr(1,65,"Freq:")
 
-#Program code
-if __name__ == "__main__":
-    #Parse command line using Argument Parser
-    parser = argparse.ArgumentParser("curses_console.py : Display YRK data in a curses-based console")
-    parser.add_argument("-s","--silent",help="Disable non-error std-out messages",action="store_true")
-    args = parser.parse_args()
-
+def main(stdscr):
+    #Don't really like this long list of globals but was needed adapt older version to use curses wrapper
+    global title_box,power_box,adc_box,servo_box,motor_box,so_box,led_box,sw_push_box,sw_0_box,sw_dip0_box,sw_dip1_box,sw_dip2_box,sw_dip3_box,sw_left_box,sw_right_box,sw_up_box,sw_down_box,sw_1_box
+    global running, selected_index
     #Now initial setup is complete, we can create the main curses window
-    stdscr = curses.initscr() # Create the curses console window
     curses.cbreak()	# Lets program react to keypresses without Enter
     curses.noecho()	# Turn off automatic echoing of keys to screen
     curses.curs_set(False) # Turn off cursor
@@ -294,7 +278,6 @@ if __name__ == "__main__":
     sw_push_box.box()
     sw_1_box.box()
 
-
     sw_0_box.immedok(True)
     sw_0_box.refresh()
     sw_dip0_box.immedok(True)
@@ -329,9 +312,6 @@ if __name__ == "__main__":
     if display_pwm_as_microseconds: stdscr.addstr (10,3,'Servo Period uS')
     else: stdscr.addstr (10,3,'Servo Raw Value')
 
-
-
-
     #Create a box to display motor information
     motor_box = curses.newwin(3,76,13,2)
     motor_box.attron(curses.color_pair(3))
@@ -363,13 +343,15 @@ if __name__ == "__main__":
 
     #Start the sensor polling thread
     sensor_thread = threading.Thread(target=take_readings,args=())
+    sensor_thread.daemon = True #This stops the thread running when main thread stops
     sensor_thread.start()
 
     #Keyboard listener
     while (running == True):
       c=stdscr.getch()
       #stdscr.addstr(16,10,'Key %s    ' % (c))
-      if c==ord('q'): running = False
+      if c==ord('q'):
+          running = False
       elif c==curses.KEY_RIGHT or c==67:
           selected_index += 1
           if selected_index == 17: selected_index = 0
@@ -395,5 +377,10 @@ if __name__ == "__main__":
           if selected_index == 7: toggle_5V_SO()
           if selected_index > 7 and selected_index < 16: update_servo_period(selected_index - 8, -1)
 
-
-    end_curses("FIN.") # Graceful exit; restores terminal modes
+#Program code
+if __name__ == "__main__":
+    #Parse command line using Argument Parser
+    parser = argparse.ArgumentParser("curses_console.py : Display YRK data in a curses-based console")
+    parser.add_argument("-s","--silent",help="Disable non-error std-out messages",action="store_true")
+    args = parser.parse_args()
+    wrapper(main)
