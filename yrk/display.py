@@ -49,10 +49,11 @@ def clear():
     disp.display()
 
 # Initialize library.
-def init_display():
+def init_display() -> bool :
     """A function to initialise and clear the display"""
     disp.begin()
     clear()
+    return True
 
 # Send the image to the display.  image is a PIL image, 128x32 pixels.
 def display_image(image):
@@ -63,12 +64,14 @@ def display_image(image):
 
     """
 
-    if(s.DISPLAY_ROTATED): image = image.transpose(Image.ROTATE_180)
-    try:
-        disp.image(image)
-        disp.display()
-    except IOError:
-        logging.warning("IO Error writing to OLED display")
+    if(s.HAS_DISPLAY):
+        if(s.DISPLAY_ROTATED): image = image.transpose(Image.ROTATE_180)
+        try:
+            disp.image(image)
+            disp.display()
+        except IOError:
+            logging.warning("IO Error writing to OLED display")
+    else: logging.debug("Call to display_image ignored; display disabled")
 
 # Display a warning with specified text
 def warning(text):

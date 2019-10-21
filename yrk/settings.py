@@ -23,6 +23,7 @@ YRL040_BUS              = 13                                                    
 I2C_5V_BUS              = 11                                                    #The PWM driver and the Arduino are on the 5V I2C Bus [bus 4 on switch]
 
 #Display settings
+HAS_DISPLAY             = True
 OLED_BUS                = 12                                                    #The bus which the OLED module is attached to [i2c_12 on YRL040 with Pi 4]
 DISPLAY_ROTATED         = False                                                 #Set to true if the OLED module is rotated to flip image
 
@@ -42,6 +43,7 @@ ADC_NAMES               = ['ADC 0','ADC 1','ADC 2','ADC 3','ADC 4','ADC 5','POT'
 
 #PWM settings
 PWM_ADDRESS             = 0x40                                                  #PCA9685 - Address 0x40 Bus 4 [5V bus]
+PWM_FREQUENCY           = 50                                                    #PWM (Analog Servo) frequency in hertz
 
 #Define sensor type in this list.  Should have 8 entries.  Note 7th is for potentiometer
 #ADC_MODELS              = ['2y0a21','2y0a41','voltage','raw','raw','raw','inv_pct','raw']
@@ -59,6 +61,11 @@ USER_GPIO_OUTPUT_STATE  = 0x00                                                  
 SWITCH_INTERRUPT_PIN    = 5                                                     #GPIO pin connected to interrupt out of U4-PCA9555 GPIO [switches]
 GPIO_INTERRUPT_PIN      = 6                                                     #GPIO pin connected to interrupt out of U13-PCA9555 GPIO [user]
 
+AUDIO_FILEPATH = "/home/pi/yrk/wav/"
+IMAGE_FILEPATH = "/home/pi/yrk/images/"
+SHOW_HOSTNAME		= True                                                      #Show hostname with IP address
+
+
 #Unchecked
 LED_DRIVER_BUS          = 9                                                     #The bus which the TCA6507 LED driver is attached to [i2c_9 on YRL028]
 SWITCH_BUS              = 9                                                     #The bus which the YRL015 switch board is attached to [i2c_9 on YRL028]
@@ -72,7 +79,7 @@ ARDUINO_ADDRESS         = 0x57
 
 ENABLE_PROGRAMS = True
 DEFAULT_PROGRAM = None
-AUDIO_FILEPATH = "wav"
+
 PROGRAM_FILEPATH = "user_programs"
 ENABLE_ROBOT_TAB = True                                                         #Enable if a robot sensor model and motor model is defined to enable components in DASH server
 # Define the robot sensors for DASH server, list of list of 4 elements: sensor ID, sensor type, theta, +-view angle
@@ -98,7 +105,7 @@ BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  
 ENABLE_DEMO_MODE        = False
 ENABLE_STATS_MODE       = False
 ENABLE_AUTOSENSE_MODE   = True
-SHOW_HOSTNAME		= True
+
 
 
 # The following are I2C and register addresses and other parameters for the YRL013 and YLR019 sensor boards
