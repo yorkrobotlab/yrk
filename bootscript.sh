@@ -35,7 +35,14 @@ if [ ! -f /mnt/ramdisk/selftest.log ]; then
       killall python
     fi
     echo "This appears to be the first run of bootscript.sh so will start self-test routine and begin services"
-    python /examples/selftest.py
+    echo
+    python examples/selftest.py
+    selftest=$?
+    if [[ $selftest == 0 ]]; then
+      echo "Starting python services"
+      echo
+    else echo;echo "Not starting python services.  To autorun services on boot enable";echo "DIP switch 1";echo
+    fi
     #python camera.py &
     #python index.py &
     #python core.py &

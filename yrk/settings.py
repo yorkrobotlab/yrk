@@ -9,7 +9,7 @@
 
 import logging,sys
 
-VERSION_STRING="0.1.221019"
+VERSION_STRING="0.1.241019"
 
 # Set the Python logging level for log files; recommend INFO for deployment and DEBUG for debugging
 FILE_LOGGING_MODE = logging.DEBUG
@@ -77,6 +77,7 @@ MOTORS_BUS              = 7
 ARDUINO_BUS             = 10
 ARDUINO_ADDRESS         = 0x57
 
+BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
 
 
 ENABLE_PROGRAMS = True
@@ -100,7 +101,6 @@ POLL_PERIOD             = 1.0                                                   
 ENABLE_BATTERY_MONITOR    = True                                                #If enabled core.py will display visual+audible warnings when battery low
 BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
 BATTERY_LOW_VOLTAGE = 10.2                                                      #Voltage at which low voltage warning given
-BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
 BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  #Enforced shutdown voltage
 
 # The following settings are only used when a YRL015 switch board is NOT connected
