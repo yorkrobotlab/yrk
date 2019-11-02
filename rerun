@@ -1,0 +1,12 @@
+#!/bin/bash
+echo York Robotics Kit - Rerun script
+echo
+echo Killing all python threads...
+killall python
+echo
+echo Erasing all files from /mnt/ramdisk
+echo
+rm /mnt/ramdisk/*
+echo Running bootscript.sh
+echo
+bash bootscript.sh

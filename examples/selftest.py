@@ -16,6 +16,9 @@ import logging, sys
 import yrk.settings as settings
 
 settings.init()
+log_filename = "selftest"
+settings.setup_logger(log_filename)
+
 
 import RPi.GPIO as GPIO, subprocess, time, os
 import yrk.display as display, yrk.led as led, yrk.audio as audio
@@ -26,11 +29,12 @@ from subprocess import call
 
 major_fail = False
 dip_switch_state = 0
-log_filename = "selftest"
-settings.setup_logger(log_filename)
 logging.info("York Robotics Kit Self Test - Ver  %s" % (settings.VERSION_STRING))
 logging.info("HOSTNAME      : %s" % (utils.get_hostname()))
 logging.info("IP ADDRESS    : %s" % (utils.get_ip()))
+if settings.BUS_ERROR:
+    logging.info("Self-test failed [i2c bus fault].  I2C switch may be faulty or wrongly configured.")
+    os._exit(3)
 
 GPIO.setmode(GPIO.BCM)
 
@@ -40,7 +44,7 @@ if(settings.HAS_DISPLAY):
     try:
         display.init_display()
         disp_status = "PASSED"
-    except IOError:
+    except (IOError):
         disp_status = "FAILED"
         settings.HAS_DISPLAY=False
 logging.info("DISPLAY       : %s" % (disp_status))

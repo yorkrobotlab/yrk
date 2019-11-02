@@ -27,7 +27,14 @@ import logging, threading, time, random, os, smbus2                             
 from smbus2 import i2c_msg
 import yrk.settings as s
 
-i2c_bus = smbus2.SMBus(s.YRL039_BUS)                                            #The YRL039 ATMega is attached to i2c_7
+try:
+  i2c_bus = smbus2.SMBus(s.YRL039_BUS)                                            #The YRL039 ATMega is attached to i2c_7
+  init_okay = True
+except FileNotFoundError:
+  logging.error("[power.py]: Cannot access /dev/i2c-%d"  % (s.YRL039_BUS))
+  init_okay = False
+  s.BUS_ERROR = True
+
 
 v_batt=0                                                                        #Battery\DC in voltage
 v_pi=0                                                                          #Raspberry Pi voltage [should be 5.0V]
@@ -42,16 +49,17 @@ def read_all_values():
     """Reads and stores all voltage, current and temperature readings in a single i2c request"""
     global v_batt, v_pi,v_aux,i_pi,i_aux,pcb_temp
     try:
-      i2c_bus.write_byte(s.YRL039_ADDRESS,8)
-      msg = i2c_msg.read(s.YRL039_ADDRESS,8)
-      i2c_bus.i2c_rdwr(msg)
-      vals=list(msg)
-      v_batt = 0.0172 * ((vals[0] << 2) + (vals[1] >> 6));
-      v_pi = 0.00539 * (((vals[1] & 0x3F) << 4) + (vals[2] >> 4));
-      v_aux = 0.00539 * (((vals[2] & 0x0F) << 6) + (vals[3] >> 2));
-      i_pi = 0.0043 * ((vals[4] << 2) + (vals[5] >> 6));
-      i_aux = 0.0043 * (((vals[5] & 0x3F) << 4) + (vals[6] >> 4));
-      pcb_temp = ((((vals[6] & 0x0F) << 6) + (vals[7] >> 2)) - 395) * 0.171875;
+      if init_okay:
+        i2c_bus.write_byte(s.YRL039_ADDRESS,8)
+        msg = i2c_msg.read(s.YRL039_ADDRESS,8)
+        i2c_bus.i2c_rdwr(msg)
+        vals=list(msg)
+        v_batt = 0.0172 * ((vals[0] << 2) + (vals[1] >> 6));
+        v_pi = 0.00539 * (((vals[1] & 0x3F) << 4) + (vals[2] >> 4));
+        v_aux = 0.00539 * (((vals[2] & 0x0F) << 6) + (vals[3] >> 2));
+        i_pi = 0.0043 * ((vals[4] << 2) + (vals[5] >> 6));
+        i_aux = 0.0043 * (((vals[5] & 0x3F) << 4) + (vals[6] >> 4));
+        pcb_temp = ((((vals[6] & 0x0F) << 6) + (vals[7] >> 2)) - 395) * 0.171875;
     except OSError:
       logging.error("Error reading register 8 from YRL039 (address %X bus %d)" % (s.YRL039_ADDRESS,s.YRL039_BUS))
 
@@ -98,11 +106,14 @@ def read_pcb_temperature():
     return (read_int_register(6) - 395) * 0.171875;
 
 def write_message(register,message):
-    i2c_bus.write_i2c_block_data(s.YRL039_ADDRESS, register, message)
+    if init_okay: i2c_bus.write_i2c_block_data(s.YRL039_ADDRESS, register, message)
 
 
 def read_int_register(register):
     try:
+      if not init_okay:
+          logging.warning("Error in initialisation of YRL039")
+          return 0
       i2c_bus.write_byte(s.YRL039_ADDRESS,register)
       msg = i2c_msg.read(s.YRL039_ADDRESS,2)
       i2c_bus.i2c_rdwr(msg)

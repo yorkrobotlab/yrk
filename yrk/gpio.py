@@ -43,7 +43,15 @@ import time, logging, os
 # IO1-6          MOTOR FAULT LED [O]
 # IO1-7          KILL SWITCH [I]
 
-i2c = smbus2.SMBus(s.YRL040_BUS)
+try:
+  i2c = smbus2.SMBus(s.YRL040_BUS)
+  init_okay = True
+except FileNotFoundError:
+  logging.error("[gpio.py]: Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
+  init_okay = False
+  s.BUS_ERROR = True
+
+
 switched_output_5V = False
 switched_output_12V = False
 motor_fault_led = True #Inverted output [True=LED off]
@@ -59,18 +67,19 @@ def setup_user_gpio():
     """
 
     #Set input 0.0-0.7 and 1.0-1.2 as inverted inputs, 1.3-1.7 as outputs [for LEDs]
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x02, s.USER_GPIO_OUTPUT_STATE)    #Output register [if]
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, 0x00)
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x04, s.USER_GPIO_INVERTED)        #Polarity inversion
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x05, 0x8F)
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x06, s.USER_GPIO_MODE)            #Mode register []
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x07, 0x8F)
+    if init_okay:
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x02, s.USER_GPIO_OUTPUT_STATE)    #Output register [if]
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, 0x00)
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x04, s.USER_GPIO_INVERTED)        #Polarity inversion
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x05, 0x8F)
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x06, s.USER_GPIO_MODE)            #Mode register []
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x07, 0x8F)
 
 
 def update_switched_gpio_outputs():
     """Sends i2c command to set the switched outputs based on stored variables"""
 
-    i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, (switched_output_5V << 4) + (switched_output_12V << 5) + (motor_fault_led << 6))
+    if init_okay: i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, (switched_output_5V << 4) + (switched_output_12V << 5) + (motor_fault_led << 6))
 
 def set_switched_output_5V(state):
     """A function to enable the 5V switched output
@@ -122,6 +131,9 @@ def read_user_gpio():
 
     """
 
+    if not init_okay:
+        logging.error("Call to read user GPIO failed")
+        return 0
     return (i2c.read_word_data(s.USER_GPIO_ADDRESS, 0x00))
 
 def read_motor_fault():

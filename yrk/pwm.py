@@ -39,7 +39,15 @@ PRESCALE_REG = 0xFE
 #Mode 2 Reg:
 #RES:RES:RES:INVRT:OCH:OUTDRV:OUTNE
 
-pwm_bus = smbus2.SMBus(s.I2C_5V_BUS)
+try:
+  pwm_bus = smbus2.SMBus(s.I2C_5V_BUS)                                          #The PWM driver is connected to a 5V bus
+  init_okay = True
+except FileNotFoundError:
+  logging.error("[pwm.py]: Cannot access /dev/i2c-%d"  % (s.I2C_5V_BUS))
+  init_okay = False
+  s.BUS_ERROR = True
+
+
 pwm_freq_hertz = 0;
 
 #Calculate the nearest duty cycle value to target on-period in seconds, returns int [0-4095] for use with set_duty_cycle_raw()
@@ -110,9 +118,10 @@ def set_prescale_value(psv: int):
     pwm_freq_hertz = 6103.516/(psv+1)
     logging.debug("Prescale Value: %d  Actual Frequency: %4.1f Hz" % (psv,pwm_freq_hertz))
     #Prescale can only be reset when SLEEP register is set to 1
-    set_sleep_mode()
-    pwm_bus.write_byte_data(s.PWM_ADDRESS, PRESCALE_REG, psv)
-    set_normal_mode()
+    if init_okay:
+        set_sleep_mode()
+        pwm_bus.write_byte_data(s.PWM_ADDRESS, PRESCALE_REG, psv)
+        set_normal_mode()
 
 def set_duty_cycle(output: int,dutycycle_pct: float):
     """Sets the duty cycle (on period) of a PWM output as a percentage
@@ -148,21 +157,21 @@ def set_duty_cycle_raw(output: int,dutycycle_raw: int):
     bytes=[0,0,dutycycle_raw % 256,dutycycle_raw >> 8]
     logging.debug("Setting PWM bytes on channel %d to:" % output)
     logging.debug(bytes)
-    pwm_bus.write_i2c_block_data(s.PWM_ADDRESS, register_address, bytes)
+    if init_okay: pwm_bus.write_i2c_block_data(s.PWM_ADDRESS, register_address, bytes)
 
 #Set MODE1 register to 0x10 [sleep state]
 def set_sleep_mode():
     """Enables sleep mode on PWM driver"""
 
     logging.debug("Setting sleep mode on PCA9685 PWM driver")
-    pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x10)
+    if init_okay: pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x10)
 
 #Set MODE1 register to 0x20 [default on state, auto-increment]
 def set_normal_mode():
     """Disables sleep mode on PWM driver"""
 
     logging.debug("Setting normal mode on PCA9685 PWM driver")
-    pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x20)
+    if init_okay: pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x20)
 
 #Test code
 if __name__ == "__main__":

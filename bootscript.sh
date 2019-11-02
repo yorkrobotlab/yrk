@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo
-echo "YRL040 - York Robotics Kit - York Robotics Laboratory, Oct 2019"
-echo
 #Check to see if HOSTNAME is correctly set [based on MAC address] or if it is default [raspberry-pi]
   # Find MAC of eth0, or if not exist wlan0
   if [ -e /sys/class/net/eth0 ]; then
@@ -34,6 +31,17 @@ if [ ! -f /mnt/ramdisk/selftest.log ]; then
     then
       killall python
     fi
+    echo
+    echo " __     __        _      _____       _           _   _            _  ___ _   ";
+    echo " \ \   / /       | |    |  __ \     | |         | | (_)          | |/ (_) |  ";
+    echo "  \ \_/ /__  _ __| | __ | |__) |___ | |__   ___ | |_ _  ___ ___  | ' / _| |_ ";
+    echo "   \   / _ \| '__| |/ / |  _  // _ \| '_ \ / _ \| __| |/ __/ __| |  < | | __|";
+    echo "    | | (_) | |  |   <  | | \ \ (_) | |_) | (_) | |_| | (__\__ \ | . \| | |_ ";
+    echo "    |_|\___/|_|  |_|\_\ |_|  \_\___/|_.__/ \___/ \__|_|\___|___/ |_|\_\_|\__|";
+    echo "                                                                             ";
+    echo "                                                                             ";
+    echo "YRL040 - York Robotics Kit - York Robotics Laboratory, Oct 2019"
+    echo
     echo "This appears to be the first run of bootscript.sh so will start self-test routine and begin services"
     echo
     python examples/selftest.py
@@ -49,10 +57,10 @@ if [ ! -f /mnt/ramdisk/selftest.log ]; then
 else
   echo "Not starting python services as files are present on /mnt/ramdisk/"
   echo
-  echo "To erase ramdisk and restart core.py try:"
+  echo "To erase ramdisk and restart services try:"
   echo
   echo ". rerun"
   echo
-  echo
 fi
 #python core.py
+

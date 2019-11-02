@@ -35,7 +35,14 @@ import time, sys, os
 
 silent = False
 
-i2c = smbus2.SMBus(s.YRL040_BUS)                                                #The motor drivers are attached to i2c_7
+try:
+  i2c = smbus2.SMBus(s.YRL040_BUS)                                         #The motor drivers are attached to the YRL040 3.3V I2C Bus
+  init_okay = True
+except FileNotFoundError:
+  logging.error("[motors.py]: Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
+  init_okay = False
+  s.BUS_ERROR = True
+
 
 brake_states = [False,False,False,False]
 motor_speeds = [0.0,0.0,0.0,0.0]
@@ -104,7 +111,7 @@ def set_motor_speed(motor,speed):
         if not silent:
             logging.info("Setting motor {} speed to {} [{}V] forwards".format(motor,integer_speed,(0.08 * integer_speed)))
         byte = ( integer_speed << 2 ) + 2
-  i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
+  if init_okay: i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
 
 #Set all motors to coast
 def stop_all_motors():
@@ -130,7 +137,7 @@ def brake_motor(motor):
   byte = 0x03  # IN1 & IN2 both high = brake
   if not silent:
     logging.info("Setting motor %d to brake" % motor)
-  i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
+  if init_okay: i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
 
 #Test code
 if __name__ == "__main__":

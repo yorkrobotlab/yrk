@@ -36,7 +36,14 @@ import time, logging, os
 # IO1-7          POWER FAULT LED [O]
 
 switch_gpio_output_byte = 0
-i2c = smbus2.SMBus(s.YRL040_BUS)
+
+try:
+  i2c = smbus2.SMBus(s.YRL040_BUS)                                           #The TCA6507 is attached to the YRL040 3.3V I2C Bus
+  init_okay = True
+except FileNotFoundError:
+  logging.error("[switch.py]: Cannot access /dev/i2c-%d" % (s.YRL040_BUS))
+  init_okay = False
+  s.BUS_ERROR = True
 
 def update_switch_gpio_output(new_states):
     """A function to update the output pins on the PCA9555 GPIO Expander
@@ -49,7 +56,7 @@ def update_switch_gpio_output(new_states):
     OUTPUT_PORT = 0x03
     global switch_gpio_output_byte
     switch_gpio_output_byte = new_states
-    i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, OUTPUT_PORT, switch_gpio_output_byte)
+    if init_okay: i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, OUTPUT_PORT, switch_gpio_output_byte)
 
 
 def setup_switch_gpio():
@@ -61,10 +68,11 @@ def setup_switch_gpio():
     """
 
     #Set input 0.0-0.7 and 1.0-1.2 as inverted inputs, 1.3-1.7 as outputs [for LEDs]
-    i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x04, 0xFF)                        #Polarity inversion
-    i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x05, 0x07)
-    i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x06, 0xFF)                        #IO State
-    i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x07, 0x07)
+    if init_okay:
+        i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x04, 0xFF)                        #Polarity inversion
+        i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x05, 0x07)
+        i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x06, 0xFF)                        #IO State
+        i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x07, 0x07)
 
 
 #Return [11 bit int] value for input registers
@@ -76,6 +84,9 @@ def read_input_registers():
 
     """
 
+    if not init_okay:
+        logging.error("Call to read switch registered failed")
+        return 0
     return (i2c.read_word_data(s.SWITCH_GPIO_ADDRESS, 0x00) & 0x7FF)
 
 #Return [nibble] value for 4-way dip-switch

@@ -27,7 +27,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 OLED_BUS = s.OLED_BUS  # The display is attached to bus 5, which translates to RPi4 bus i2c_12
 
-disp = Adafruit_SSD1306.SSD1306_128_32(rst=None,i2c_bus=OLED_BUS)
+try:
+   disp = Adafruit_SSD1306.SSD1306_128_32(rst=None,i2c_bus=OLED_BUS)
+except FileNotFoundError:
+   s.HAS_DISPLAY=False
+   s.BUS_ERROR=True
+   logging.error("[display.py]: Cannot access /dev/i2c-%d"  % (OLED_BUS))
+
 
 #Fonts [filepaths in settings.py]
 mono_small = ImageFont.truetype(s.SMALL_MONO,8)
@@ -51,6 +57,7 @@ def clear():
 # Initialize library.
 def init_display() -> bool :
     """A function to initialise and clear the display"""
+    if not s.HAS_DISPLAY: return False
     disp.begin()
     clear()
     return True

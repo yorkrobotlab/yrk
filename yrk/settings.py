@@ -35,7 +35,7 @@ SMALL_BOLD = '/home/pi/yrk/font/small_bold.ttf'
 LARGE_FONT = '/home/pi/yrk/font/yrk_font.ttf'
 
 #Audio settings
-AUDIO_VOLUME = 90
+AUDIO_VOLUME = 100
 AUDIO_ON_GPIO_PIN = 16                                                          #Audio On [ie unmute] is pin 16 on R.Pi GPIO
 
 #Motor Settings
@@ -79,7 +79,7 @@ ARDUINO_ADDRESS         = 0x57
 
 BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
 
-
+BUS_ERROR       = False                                                         #Will be set to true if there is a problem initialising i2c busses
 ENABLE_PROGRAMS = True
 DEFAULT_PROGRAM = None
 
