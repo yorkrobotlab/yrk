@@ -31,7 +31,7 @@ try:
   i2c_bus = smbus2.SMBus(s.YRL039_BUS)                                            #The YRL039 ATMega is attached to i2c_7
   init_okay = True
 except FileNotFoundError:
-  logging.error("[power.py]: Cannot access /dev/i2c-%d"  % (s.YRL039_BUS))
+  logging.error("[power.py]    : Cannot access /dev/i2c-%d"  % (s.YRL039_BUS))
   init_okay = False
   s.BUS_ERROR = True
 

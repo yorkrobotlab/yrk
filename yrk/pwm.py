@@ -43,7 +43,7 @@ try:
   pwm_bus = smbus2.SMBus(s.I2C_5V_BUS)                                          #The PWM driver is connected to a 5V bus
   init_okay = True
 except FileNotFoundError:
-  logging.error("[pwm.py]: Cannot access /dev/i2c-%d"  % (s.I2C_5V_BUS))
+  logging.error("[pwm.py]      : Cannot access /dev/i2c-%d"  % (s.I2C_5V_BUS))
   init_okay = False
   s.BUS_ERROR = True
 

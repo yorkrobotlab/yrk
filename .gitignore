@@ -1,6 +1,8 @@
 # Audio and fonts
 font/
 wav/
+catkin_ws/build
+catkin_ws/devel
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

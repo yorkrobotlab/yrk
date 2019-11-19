@@ -32,7 +32,7 @@ try:
 except FileNotFoundError:
    s.HAS_DISPLAY=False
    s.BUS_ERROR=True
-   logging.error("[display.py]: Cannot access /dev/i2c-%d"  % (OLED_BUS))
+   logging.error("[display.py]  : Cannot access /dev/i2c-%d"  % (OLED_BUS))
 
 
 #Fonts [filepaths in settings.py]

@@ -39,7 +39,7 @@ try:
   i2c = smbus2.SMBus(s.YRL040_BUS)                                         #The motor drivers are attached to the YRL040 3.3V I2C Bus
   init_okay = True
 except FileNotFoundError:
-  logging.error("[motors.py]: Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
+  logging.error("[motors.py]   : Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
   init_okay = False
   s.BUS_ERROR = True
 

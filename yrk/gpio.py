@@ -47,7 +47,7 @@ try:
   i2c = smbus2.SMBus(s.YRL040_BUS)
   init_okay = True
 except FileNotFoundError:
-  logging.error("[gpio.py]: Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
+  logging.error("[gpio.py]     : Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
   init_okay = False
   s.BUS_ERROR = True
 

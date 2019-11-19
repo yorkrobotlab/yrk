@@ -34,7 +34,7 @@ try:
   body_bus = smbus2.SMBus(s.YRL040_BUS)                                           #The TCA6507 is attached to the YRL040 3.3V I2C Bus
   init_okay = True
 except FileNotFoundError:
-  logging.error("[led.py]: Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
+  logging.error("[led.py]      : Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
   init_okay = False
   s.BUS_ERROR = True
 

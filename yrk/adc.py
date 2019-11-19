@@ -54,7 +54,7 @@ try:
   adc_bus = smbus2.SMBus(s.YRL040_BUS)
   init_okay = True
 except FileNotFoundError:
-  logging.error("[adc.py]: Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
+  logging.error("[adc.py]      : Cannot access /dev/i2c-%d"  % (s.YRL040_BUS))
   init_okay = False
   s.BUS_ERROR = True
 
