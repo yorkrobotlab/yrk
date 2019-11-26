@@ -39,7 +39,7 @@ def power_status_publisher():
 	rospy.init_node('power_status_publisher')
 
 	# Loop once per second and publish a message to the topic
-	rate = rospy.Rate(2)
+	rate = rospy.Rate(s.ROS_POWER_PUBLISHER_RATE)
 	while not rospy.is_shutdown():
 		power.read_all_values()
 		msg = yrk_ros.msg.power_status()

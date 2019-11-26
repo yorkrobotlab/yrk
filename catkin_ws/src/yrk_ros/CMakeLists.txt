@@ -50,6 +50,8 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    power_status.msg
+   adc_message.msg
+   switch_message.msg
  )
 
 ## Generate services in the 'srv' folder

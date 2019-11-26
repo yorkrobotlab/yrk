@@ -28,8 +28,9 @@ To run::
 
 import rospy
 import yrk_ros.msg
-import yrk.settings as s,yrk.utils as utils, yrk.adc as adc, yrk.motors as motors
-import yrk.power as power, yrk.switch as switch, yrk.gpio as gpio, yrk.led as led
+import yrk
+import yrk.utils as utils, yrk.motors as motors
+import yrk.switch as switch, yrk.gpio as gpio, yrk.led as led
 import yrk.pwm as pwm
 import curses 	  # For fancy console over-writing
 from curses import wrapper
@@ -114,41 +115,43 @@ def power_status_callback(power_data):
     power_box.addstr(1,60,"%2.1fC" % power_data.pcb_temp,curses.A_BOLD);
     power_box.addstr(1,70,"%2.1fC" % power_data.cpu_temp,curses.A_BOLD);
 
-def power_status_listener():
-    rospy.init_node('power_status_listener', anonymous=True)
-    rospy.Subscriber("power_status",yrk_ros.msg.power_status,power_status_callback)
-    rospy.spin()
+def adc_callback(adc_data):
+    adc_box.addstr(1,4,"%03d" % adc_data.a0,curses.A_BOLD);
+    adc_box.addstr(1,13,"%03d" % adc_data.a1,curses.A_BOLD);
+    adc_box.addstr(1,22,"%03d" % adc_data.a2,curses.A_BOLD);
+    adc_box.addstr(1,31,"%03d" % adc_data.a3,curses.A_BOLD);
+    adc_box.addstr(1,40,"%03d" % adc_data.a4,curses.A_BOLD);
+    adc_box.addstr(1,49,"%03d" % adc_data.a5,curses.A_BOLD);
+    adc_box.addstr(1,58,"%03d" % adc_data.a6,curses.A_BOLD);
+    adc_box.addstr(1,67,"%03d" % adc_data.a7,curses.A_BOLD);
+
+def switch_callback(switch_data):
+    if(switch_data.push1): sw_1_box.addstr(1,1,'PUSH 1',curses.A_STANDOUT)
+    else: sw_1_box.addstr(1,1,'PUSH 1')
+    if(switch_data.push0): sw_0_box.addstr(1,1,'PUSH 0',curses.A_STANDOUT)
+    else: sw_0_box.addstr(1,1,'PUSH 0')
+    if(switch_data.center): sw_push_box.addstr(1,1,'CENTER',curses.A_STANDOUT)
+    else: sw_push_box.addstr(1,1,'CENTER')
+    if(switch_data.right): sw_right_box.addstr(1,1,'RIGHT',curses.A_STANDOUT)
+    else: sw_right_box.addstr(1,1,'RIGHT')
+    if(switch_data.left): sw_left_box.addstr(1,1,'LEFT',curses.A_STANDOUT)
+    else: sw_left_box.addstr(1,1,'LEFT')
+    if(switch_data.down): sw_down_box.addstr(1,1,'DOWN',curses.A_STANDOUT)
+    else: sw_down_box.addstr(1,1,'DOWN')
+    if(switch_data.up): sw_up_box.addstr(1,1,'UP',curses.A_STANDOUT)
+    else: sw_up_box.addstr(1,1,'UP')
+    if(switch_data.dip3): sw_dip3_box.addstr(1,1,'DIP 3',curses.A_STANDOUT)
+    else: sw_dip3_box.addstr(1,1,'DIP 3')
+    if(switch_data.dip2): sw_dip2_box.addstr(1,1,'DIP 2',curses.A_STANDOUT)
+    else: sw_dip2_box.addstr(1,1,'DIP 2')
+    if(switch_data.dip1): sw_dip1_box.addstr(1,1,'DIP 1',curses.A_STANDOUT)
+    else: sw_dip1_box.addstr(1,1,'DIP 1')
+    if(switch_data.dip0): sw_dip0_box.addstr(1,1,'DIP 0',curses.A_STANDOUT)
+    else: sw_dip0_box.addstr(1,1,'DIP 0')
 
 # Function to read all sensors and update display
 def take_readings():
-  while(running == True):
-    count = 0
-    for i in range(8):
-        adc_box.addstr(1,4+(i*9),"%03d" % adc.read_adc(i),curses.A_BOLD);
-        time.sleep(0.01)
-    switch_register = switch.read_input_registers()
-    if(switch_register & 0x400): sw_1_box.addstr(1,1,'PUSH 1',curses.A_STANDOUT)
-    else: sw_1_box.addstr(1,1,'PUSH 1')
-    if(switch_register & 0x200): sw_0_box.addstr(1,1,'PUSH 0',curses.A_STANDOUT)
-    else: sw_0_box.addstr(1,1,'PUSH 0')
-    if(switch_register & 0x100): sw_push_box.addstr(1,1,'CENTER',curses.A_STANDOUT)
-    else: sw_push_box.addstr(1,1,'CENTER')
-    if(switch_register & 0x080): sw_right_box.addstr(1,1,'RIGHT',curses.A_STANDOUT)
-    else: sw_right_box.addstr(1,1,'RIGHT')
-    if(switch_register & 0x040): sw_left_box.addstr(1,1,'LEFT',curses.A_STANDOUT)
-    else: sw_left_box.addstr(1,1,'LEFT')
-    if(switch_register & 0x020): sw_down_box.addstr(1,1,'DOWN',curses.A_STANDOUT)
-    else: sw_down_box.addstr(1,1,'DOWN')
-    if(switch_register & 0x010): sw_up_box.addstr(1,1,'UP',curses.A_STANDOUT)
-    else: sw_up_box.addstr(1,1,'UP')
-    if(switch_register & 0x008): sw_dip3_box.addstr(1,1,'DIP 3',curses.A_STANDOUT)
-    else: sw_dip3_box.addstr(1,1,'DIP 3')
-    if(switch_register & 0x004): sw_dip2_box.addstr(1,1,'DIP 2',curses.A_STANDOUT)
-    else: sw_dip2_box.addstr(1,1,'DIP 2')
-    if(switch_register & 0x002): sw_dip1_box.addstr(1,1,'DIP 1',curses.A_STANDOUT)
-    else: sw_dip1_box.addstr(1,1,'DIP 1')
-    if(switch_register & 0x001): sw_dip0_box.addstr(1,1,'DIP 0',curses.A_STANDOUT)
-    else: sw_dip0_box.addstr(1,1,'DIP 0')
+  while(running == True): 
     if(motors.get_brake_state(0)): motor_box.addstr(1,10,'BRAKE')
     elif motors.get_motor_speed(0) == 0: motor_box.addstr(1,10,'COAST')
     else: motor_box.addstr(1,10,'%+1.2f' % (motors.get_motor_speed(0)))
@@ -228,7 +231,7 @@ def main(stdscr):
     title_box = curses.newwin(3,76,1,2) #Height,width,Y,X
     title_box.attron(curses.color_pair(3)  )
     title_box.box()
-    title_box.addstr (1,1,'York Robotics Kit Console                    York Robotics Laboratory 2019',curses.A_BOLD)
+    title_box.addstr (1,1,'York Robotics Kit ROS Console                York Robotics Laboratory 2019',curses.A_BOLD)
     title_box.immedok(True)
     title_box.refresh()
 
@@ -357,8 +360,13 @@ def main(stdscr):
     sensor_thread.start()
 
     #Start the ROS listeners
-    power_status_listener()
-    
+
+    rospy.init_node('yrk_ros_console', anonymous=True)
+    rospy.Subscriber("adc_publisher",yrk_ros.msg.adc_message,adc_callback)
+    rospy.Subscriber("power_status",yrk_ros.msg.power_status,power_status_callback)
+    rospy.Subscriber("button_status",yrk_ros.msg.switch_status,switch_status_callback)
+    #rospy.spin()
+
     #Keyboard listener
     while (running == True):
       c=stdscr.getch()
@@ -392,8 +400,7 @@ def main(stdscr):
 
 #Program code
 if __name__ == "__main__":
-    #Parse command line using Argument Parser
-    parser = argparse.ArgumentParser("curses_console.py : Display YRK data in a curses-based console")
-    parser.add_argument("-s","--silent",help="Disable non-error std-out messages",action="store_true")
-    args = parser.parse_args()
-    wrapper(main)
+    try:
+        wrapper(main)
+    except rospy.ROSInterruptException:
+        pass

@@ -67,6 +67,10 @@ AUDIO_FILEPATH = "/home/pi/yrk/wav/"
 IMAGE_FILEPATH = "/home/pi/yrk/images/"
 SHOW_HOSTNAME		= True                                                      #Show hostname with IP address
 
+#ROS settings
+ROS_POWER_PUBLISHER_RATE = 2                                                    #Refresh rate [Hz] of power status messages on ROS
+ROS_ADC_PUBLISHER_RATE = 5                                                      #Refresh rate [Hz] of ADC messages on ROS
+ROS_SWITCH_PUBLISHER_RATE = 5							#Refresh rate [Hz] of button messages
 
 #Unchecked
 LED_DRIVER_BUS          = 9                                                     #The bus which the TCA6507 LED driver is attached to [i2c_9 on YRL028]
