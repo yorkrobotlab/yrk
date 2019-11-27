@@ -40,9 +40,6 @@ def button_publisher():
 	while not rospy.is_shutdown():
 		msg = yrk_ros.msg.switch_message()
 		switch_register = switch.read_input_registers()
-		msg.push0 = switch_register & 0x200
-		msg.push1 = switch_register & 0x400
-		msg.center = switch_register & 0x100
 		msg.dip0 = switch_register & 0x001
 		msg.dip1 = switch_register & 0x002
 		msg.dip2 = switch_register & 0x004
@@ -51,6 +48,10 @@ def button_publisher():
 		msg.down = switch_register & 0x020
 		msg.left = switch_register & 0x040
 		msg.right = switch_register & 0x080
+		sr = switch_register >> 8
+		msg.center = sr & 1
+		msg.push0 = sr & 2
+		msg.push1 = sr & 4
 		rospy.loginfo("Sending switch message")
 		pub.publish(msg)
 		rate.sleep()

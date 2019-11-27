@@ -1,0 +1,7 @@
+<launch>
+ <node name="adc_publisher" pkg="yrk_ros" type="adc_publisher.py" />
+ <node name="button_publisher" pkg="yrk_ros" type="button_publisher.py" />
+ <node name="power_monitor" pkg="yrk_ros" type="power_monitor.py" />
+ <node name="switched_output_server" pkg="yrk_ros" type="switched_output_server.py" />
+ <node name="led_server" pkg="yrk_ros" type="led_server.py" />
+</launch>

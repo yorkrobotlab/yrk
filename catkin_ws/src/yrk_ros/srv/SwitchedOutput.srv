@@ -1,0 +1,4 @@
+uint8 output
+bool enable
+---
+bool success

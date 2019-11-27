@@ -22,12 +22,14 @@ This version interacts with the robot using its ROS services.
 
 To run::
 
+   roslaunch yrk_ros yrk.launch
    rosrun yrk_ros ros_console.py
 
 """
 
 import rospy
 import yrk_ros.msg
+from yrk_ros.srv import SwitchedOutput, LED
 import yrk
 import yrk.utils as utils, yrk.motors as motors
 import yrk.switch as switch, yrk.gpio as gpio, yrk.led as led
@@ -49,12 +51,10 @@ led_brightness = 3
 switched_out_5V = True #Init as true but will be toggled when toggle_5V_SO is called
 switched_out_12V = True
 display_pwm_as_microseconds = True
-
+led_string = "--"
 pwm.set_pwm_frequency(50.0)
 default_servo_period_raw = pwm.calculate_nearest_duty_cycle_to_period(0.0015)
 pwm_periods = [default_servo_period_raw] * 8
-
-gpio.setup_user_gpio()
 switch.setup_switch_gpio()
 motors.stop_all_motors()
 
@@ -75,36 +75,47 @@ def update_led_brightness(increment):
     if led_brightness > 15 : led_brightness = 15
     if led_brightness < 0 : led_brightness = 0
     led_box.addstr(1,46,"%02d [%03d%%]" % (led_brightness, int(6.67 * led_brightness) ) )
-    led.set_brightness(led_brightness)
     update_led(0)
 
 def toggle_5V_SO():
     global switched_out_5V
     switched_out_5V = not switched_out_5V
-    gpio.set_switched_output_5V(switched_out_5V)
+    set_switched_output(1,switched_out_5V)
     if(switched_out_5V): so_box.addstr(1,16,"ON ")
     else: so_box.addstr(1,16,"OFF")
 
 def toggle_12V_SO():
     global switched_out_12V
     switched_out_12V = not switched_out_12V
-    gpio.set_switched_output_12V(switched_out_12V)
+    set_switched_output(0,switched_out_12V)
     if(switched_out_12V): so_box.addstr(1,6,"ON ")
     else: so_box.addstr(1,6,"OFF")
 
+def set_switched_output(output,state):
+    try:
+        enable_switched_output = rospy.ServiceProxy('switched_output_service',SwitchedOutput)
+        enable_switched_output(output,state)
+    except rospy.ServiceException as e:
+        print ("Service call failed: %s" % e)
+
 def update_led(increment):
-    global led_index
+    global led_index, led_string
     led_index += increment
     led_options = len(led.solid_colours) + len(led.body_animations) - 1
     if led_index < 0 : led_index = led_options
     if led_index > led_options : led_index = 0
-    if led_index < len(led.solid_colours) : led.set_colour_solid(led_index)
-    else: led.animation(led_index - len(led.solid_colours))
-
-def get_led_str():
-    if led_index < len(led.solid_colours) : ret_str = led.solid_colours[led_index][0]
-    else: ret_str = led.body_animations[led_index - len(led.solid_colours)][0]
-    return ret_str.ljust(20)
+    if led_index < len(led.solid_colours) : 
+        index=led_index
+        animation=False
+    else:
+        index=led_index - len(led.solid_colours)
+        animation=True
+    try:
+        led_service = rospy.ServiceProxy('led_service',LED)
+        response = led_service(index,led_brightness,animation)
+        led_string=response.name
+    except rospy.ServiceException as e:
+        print ("Service call failed: %s" % e)   
 
 def power_status_callback(power_data):
     power_box.addstr(1,5,"%02.2fV" % power_data.v_battery,curses.A_BOLD);
@@ -151,7 +162,7 @@ def switch_callback(switch_data):
 
 # Function to read all sensors and update display
 def take_readings():
-  while(running == True): 
+  while(running == True):
     if(motors.get_brake_state(0)): motor_box.addstr(1,10,'BRAKE')
     elif motors.get_motor_speed(0) == 0: motor_box.addstr(1,10,'COAST')
     else: motor_box.addstr(1,10,'%+1.2f' % (motors.get_motor_speed(0)))
@@ -181,8 +192,8 @@ def take_readings():
     else: motor_box.addstr(1,39,"MOTOR 2")
     if(selected_index == 3): motor_box.addstr(1,58,"MOTOR 3",curses.A_STANDOUT)
     else: motor_box.addstr(1,58,"MOTOR 3")
-    if(selected_index == 4): led_box.addstr(1,1,get_led_str(),curses.A_STANDOUT)
-    else: led_box.addstr(1,1,get_led_str())
+    if(selected_index == 4): led_box.addstr(1,1,led_string.ljust(20),curses.A_STANDOUT)
+    else: led_box.addstr(1,1,led_string.ljust(20))
     if(selected_index == 5): led_box.addstr(1,34,"Brightness:",curses.A_STANDOUT)
     else: led_box.addstr(1,34,"Brightness:")
     if(selected_index == 7): so_box.addstr(1,12,"5V:",curses.A_STANDOUT)
@@ -207,6 +218,7 @@ def take_readings():
     else: servo_box.addstr(1,57,"S7:")
     if(selected_index == 16): servo_box.addstr(1,65,"Freq:",curses.A_STANDOUT)
     else: servo_box.addstr(1,65,"Freq:")
+    time.sleep(0.05)
 
 def main(stdscr):
     #Don't really like this long list of globals but was needed adapt older version to use curses wrapper
@@ -359,12 +371,17 @@ def main(stdscr):
     sensor_thread.daemon = True #This stops the thread running when main thread stops
     sensor_thread.start()
 
-    #Start the ROS listeners
+    #Start the ROS subscribers
 
     rospy.init_node('yrk_ros_console', anonymous=True)
     rospy.Subscriber("adc_publisher",yrk_ros.msg.adc_message,adc_callback)
     rospy.Subscriber("power_status",yrk_ros.msg.power_status,power_status_callback)
-    rospy.Subscriber("button_status",yrk_ros.msg.switch_status,switch_status_callback)
+    rospy.Subscriber("button_publisher",yrk_ros.msg.switch_message,switch_callback)
+
+    #Start the ROS services
+    rospy.wait_for_service('switched_output_service')
+
+
     #rospy.spin()
 
     #Keyboard listener

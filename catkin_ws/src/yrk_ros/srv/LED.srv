@@ -1,0 +1,5 @@
+uint8 index
+uint8 brightness
+bool animation
+---
+string name
