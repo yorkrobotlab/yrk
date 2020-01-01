@@ -5,15 +5,15 @@
 #
 # Settings and Constants File
 #
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 import logging,sys
 
-VERSION_STRING="0.1.241019"
+VERSION_STRING="0.1.200101"
 
 # Set the Python logging level for log files; recommend INFO for deployment and DEBUG for debugging
 FILE_LOGGING_MODE = logging.DEBUG
-CONSOLE_LOGGING_MODE = logging.INFO  #Cannot be a lower level than FILE_LOGGING_MODE
+CONSOLE_LOGGING_MODE = logging.DEBUG  #Cannot be a lower level than FILE_LOGGING_MODE
 
 
 YRL039_ADDRESS          = 0x39                                                  #The I2C address for the ATMega on the YRL039 Power Supply Board
@@ -72,6 +72,23 @@ ROS_POWER_PUBLISHER_RATE = 2                                                    
 ROS_ADC_PUBLISHER_RATE = 5                                                      #Refresh rate [Hz] of ADC messages on ROS
 ROS_SWITCH_PUBLISHER_RATE = 5							#Refresh rate [Hz] of button messages
 
+
+
+
+#YRK-core settings
+BATTERY_CHECK_PERIOD = 2.0                                                      #Period (s) between battery state checks
+ENABLE_BATTERY_MONITOR    = True                                                #If enabled core.py will display visual+audible warnings when battery low
+BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
+BATTERY_LOW_VOLTAGE = 10.2                                                      #Voltage at which low voltage warning given
+BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  #Enforced shutdown voltage
+USE_DIP_FUNCTIONS = True                                                        #If True, yrk-core uses DIP 2 for ROS, DIP 3 for DASH server and DIP 4 for DEMO
+
+
+
+
+
+
+
 #Unchecked
 LED_DRIVER_BUS          = 9                                                     #The bus which the TCA6507 LED driver is attached to [i2c_9 on YRL028]
 SWITCH_BUS              = 9                                                     #The bus which the YRL015 switch board is attached to [i2c_9 on YRL028]
@@ -82,6 +99,9 @@ ARDUINO_BUS             = 10
 ARDUINO_ADDRESS         = 0x57
 
 BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
+
+POLL_PERIOD             = 1.0                                                   #Period (seconds) at which to update sensor readings
+
 
 BUS_ERROR       = False                                                         #Will be set to true if there is a problem initialising i2c busses
 ENABLE_PROGRAMS = True
@@ -100,12 +120,7 @@ ROBOT_SENSOR_MODEL = [
 
 SENSOR_PORT_LIST        = [3,4,5]                                               #The I2C ports which will be scanned for sensors
 
-POLL_PERIOD             = 1.0                                                   #Period (seconds) at which to update sensor readings
 
-ENABLE_BATTERY_MONITOR    = True                                                #If enabled core.py will display visual+audible warnings when battery low
-BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
-BATTERY_LOW_VOLTAGE = 10.2                                                      #Voltage at which low voltage warning given
-BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  #Enforced shutdown voltage
 
 # The following settings are only used when a YRL015 switch board is NOT connected
 ENABLE_DEMO_MODE        = False
@@ -167,12 +182,10 @@ def setup_logger(filename):
     rootLogger.addHandler(consoleHandler)
 
 def init():
-    global use_built_in_dip_functions
     global initial_led_brightness
     global max_brightness
     global sensor_list
     global default_poll_period
-    use_built_in_dip_functions = True                                             #Enable to use the built-in functions for the DIP switches
     sensor_list = []
     initial_led_brightness = 0.3                                                  #Multiplied by max_brightness
     max_brightness = 0.3                                                          #Brightness limit for LEDs.  Range 0-1.  1 is very bright and may cause power\heat issues if not used carefully...
