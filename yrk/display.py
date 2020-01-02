@@ -89,7 +89,7 @@ def warning(text):
 
     """
 
-    draw_image = Image.open("images/warning.pbm")
+    draw_image = Image.open(s.IMAGE_FILEPATH + "warning.pbm")
     draw = ImageDraw.Draw(draw_image)
     draw.text((40,16),text,font=mono_small,fill=255)
     display_image(draw_image)

@@ -77,12 +77,20 @@ ROS_SWITCH_PUBLISHER_RATE = 5							#Refresh rate [Hz] of button messages
 
 #YRK-core settings
 BATTERY_CHECK_PERIOD = 2.0                                                      #Period (s) between battery state checks
-ENABLE_BATTERY_MONITOR    = True                                                #If enabled core.py will display visual+audible warnings when battery low
-BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
+ENABLE_BATTERY_MONITOR    = True                                                #If enabled yrk-core.py will display visual+audible warnings when battery low
+ENABLE_TEMPERATURE_MONITOR = True                                               #If enabled yrk-core.py will display visual+audible warnings when cpu\pcb temperature high
+BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will force shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
+TEMPERATURE_CRITICAL_SHUTDOWN = True                                            #If enabled, system will force shutdown when CPU Temp<CPU_SHUTDOWN_TEMP or PCB Temp<PCB_SHUTDOWN_TEMP
 BATTERY_LOW_VOLTAGE = 10.2                                                      #Voltage at which low voltage warning given
+BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
 BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  #Enforced shutdown voltage
+CPU_WARNING_TEMP = 60
+CPU_CRITICAL_TEMP = 70
+CPU_SHUTDOWN_TEMP = 80
+PCB_WARNING_TEMP = 35
+PCB_CRITICAL_TEMP = 45
+PCB_SHUTDOWN_TEMP = 55
 USE_DIP_FUNCTIONS = True                                                        #If True, yrk-core uses DIP 2 for ROS, DIP 3 for DASH server and DIP 4 for DEMO
-
 
 
 
@@ -98,7 +106,6 @@ MOTORS_BUS              = 7
 ARDUINO_BUS             = 10
 ARDUINO_ADDRESS         = 0x57
 
-BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
 
 POLL_PERIOD             = 1.0                                                   #Period (seconds) at which to update sensor readings
 
