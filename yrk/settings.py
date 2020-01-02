@@ -71,12 +71,13 @@ SHOW_HOSTNAME		= True                                                      #Show
 ROS_POWER_PUBLISHER_RATE = 2                                                    #Refresh rate [Hz] of power status messages on ROS
 ROS_ADC_PUBLISHER_RATE = 5                                                      #Refresh rate [Hz] of ADC messages on ROS
 ROS_SWITCH_PUBLISHER_RATE = 5							#Refresh rate [Hz] of button messages
-
-
+ROS_PID_FILE = RAMDISK_FILEPATH+"/roslaunch.pid"
+ROS_LAUNCH_COMMAND = ["roslaunch","--pid="+ROS_PID_FILE,"yrk_ros","yrk.launch"] #Command to be executed [using subprocess.Popen()] when ROS is launched by YRK-Core
 
 
 #YRK-core settings
 BATTERY_CHECK_PERIOD = 2.0                                                      #Period (s) between battery state checks
+TEMPERATURE_CHECK_PERIOD = 2.0                                                  #Period (s) between temperature checks
 ENABLE_BATTERY_MONITOR    = True                                                #If enabled yrk-core.py will display visual+audible warnings when battery low
 ENABLE_TEMPERATURE_MONITOR = True                                               #If enabled yrk-core.py will display visual+audible warnings when cpu\pcb temperature high
 BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will force shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
@@ -84,15 +85,14 @@ TEMPERATURE_CRITICAL_SHUTDOWN = True                                            
 BATTERY_LOW_VOLTAGE = 10.2                                                      #Voltage at which low voltage warning given
 BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
 BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  #Enforced shutdown voltage
-CPU_WARNING_TEMP = 60
-CPU_CRITICAL_TEMP = 70
-CPU_SHUTDOWN_TEMP = 80
-PCB_WARNING_TEMP = 35
-PCB_CRITICAL_TEMP = 45
-PCB_SHUTDOWN_TEMP = 55
+CPU_WARNING_TEMP = 65                                                           #CPU warning temperature, recommend ~65C for Pi 4 and ~60C for Pi 3
+CPU_CRITICAL_TEMP = 75                                                          #CPU critical temperature, recommend ~75C for Pi 4 and ~65C for Pi 3
+CPU_SHUTDOWN_TEMP = 82                                                          #CPU shutdown temperature, recommend ~82C for Pi 4 and ~72C for Pi 3
+PCB_WARNING_TEMP = 39                                                           #PCB warning temperature, recommend ~40C
+PCB_CRITICAL_TEMP = 45                                                          #PCB critical temperature, recommend ~45C
+PCB_SHUTDOWN_TEMP = 50                                                          #PCB forced shutdown temperature, recommend ~50C
 USE_DIP_FUNCTIONS = True                                                        #If True, yrk-core uses DIP 2 for ROS, DIP 3 for DASH server and DIP 4 for DEMO
-
-
+USE_DIP_LEDS = True                                                             #If true, yrk-core will set DIP LEDs based on program state
 
 
 

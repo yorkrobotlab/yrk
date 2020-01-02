@@ -141,6 +141,7 @@ def play_audio_file(file):
 
 def play_audio_file_background(file):
   t=threading.Thread(target=play_audio_file,args=(file,))
+  t.daemon=True
   t.start()
 
 def say_ip():
@@ -166,6 +167,7 @@ def say_ip():
 
 
 audio_thread=threading.Thread(target=audio_queue_thread)
+audio_thread.daemon=True
 
 #Command line test [will run when audio.py is run directly]
 if __name__ == "__main__":
