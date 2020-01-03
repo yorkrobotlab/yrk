@@ -91,8 +91,12 @@ try:
     pwm.set_pwm_frequency(settings.PWM_FREQUENCY)
     pwm_status = "PASSED"
 except IOError:
-    pwm_status = "FAILED"
-    major_fail = True
+    if settings.IGNORE_PWM_FAILURE:
+        pwm_status = "FAILED (IGNORED)"
+        major_fail = False
+    else:
+        pwm_status = "FAILED"
+        major_fail = True
 
 logging.info("PWM DRIVER    : %s" % (pwm_status))
 

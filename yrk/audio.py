@@ -72,7 +72,7 @@ def audio_queue_thread():
           logging.debug("Audio task finished - muting audio")
           q.task_done()
           mute()
-    time.sleep(0.01)
+        time.sleep(0.01)
 
 def start_audio_thread():
     """Function to start the audio thread"""

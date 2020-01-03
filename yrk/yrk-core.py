@@ -284,7 +284,7 @@ def start_threads():
 def reset_all():
     motors.stop_all_motors()
     led.set_colour_solid(0)
-    display.clear()
+    display.init_display()
 
 #Main loop
 def core_loop():
@@ -304,6 +304,7 @@ def core_loop():
            check_switch_state()
            switch_check_requested = False
       time.sleep(0.001)
+      #time.sleep(0.05)
 
 def close_program():
     #May want to do graceful exit stuff?

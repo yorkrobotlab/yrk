@@ -95,7 +95,8 @@ PCB_SHUTDOWN_TEMP = 50                                                          
 USE_DIP_FUNCTIONS = True                                                        #If True, yrk-core uses DIP 2 for ROS, DIP 3 for DASH server and DIP 4 for DEMO
 USE_DIP_LEDS = True                                                             #If true, yrk-core will set DIP LEDs based on program state
 
-
+#Selftest [examples/selftest.py] override settings
+IGNORE_PWM_FAILURE = True                                                       #If true, fault in PWM I2C will be ignored
 
 
 #Unchecked

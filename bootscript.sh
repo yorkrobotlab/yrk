@@ -49,11 +49,9 @@ if [ ! -f /mnt/ramdisk/selftest.log ]; then
     if [[ $selftest == 0 ]]; then
       echo "Starting python services"
       echo
+      python yrk/yrk-core.py
     else echo;echo "Not starting python services.  To autorun services on boot enable";echo "DIP switch 1";echo
     fi
-    #python camera.py &
-    #python index.py &
-    #python core.py &
 else
   echo "Not starting python services as files are present on /mnt/ramdisk/"
   echo
