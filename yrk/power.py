@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # York Robotics Kit Python API
 #
-# Version 0.1
+# Version 0.2
 # Functions for communicating with the YRL039 Power Supply Board
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: power
@@ -25,7 +25,7 @@ microcontroller [using the I2C bus].
 
 import logging, threading, time, random, os, smbus2                             #General Python imports
 from smbus2 import i2c_msg
-import yrk.settings as s
+import yrk.settings as s, yrk.utils as utils
 
 try:
   i2c_bus = smbus2.SMBus(s.YRL039_BUS)                                            #The YRL039 ATMega is attached to i2c_7
@@ -50,9 +50,11 @@ def read_all_values():
     global v_batt, v_pi,v_aux,i_pi,i_aux,pcb_temp
     try:
       if init_okay:
+        utils.i2c_lock()
         i2c_bus.write_byte(s.YRL039_ADDRESS,8)
         msg = i2c_msg.read(s.YRL039_ADDRESS,8)
         i2c_bus.i2c_rdwr(msg)
+        utils.i2c_unlock()
         vals=list(msg)
         v_batt = 0.0172 * ((vals[0] << 2) + (vals[1] >> 6));
         v_pi = 0.00539 * (((vals[1] & 0x3F) << 4) + (vals[2] >> 4));
@@ -106,17 +108,21 @@ def read_pcb_temperature():
     return (read_int_register(6) - 395) * 0.171875;
 
 def write_message(register,message):
-    if init_okay: i2c_bus.write_i2c_block_data(s.YRL039_ADDRESS, register, message)
-
+    if init_okay:
+        utils.i2c_lock()
+        i2c_bus.write_i2c_block_data(s.YRL039_ADDRESS, register, message)
+        utils.i2c_unlock()
 
 def read_int_register(register):
     try:
       if not init_okay:
           logging.warning("Error in initialisation of YRL039")
           return 0
+      utils.i2c_lock()
       i2c_bus.write_byte(s.YRL039_ADDRESS,register)
       msg = i2c_msg.read(s.YRL039_ADDRESS,2)
       i2c_bus.i2c_rdwr(msg)
+      utils.i2c_unlock()
       vals=list(msg)
       return (vals[0] << 8) + vals[1];
     except OSError:

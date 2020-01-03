@@ -1,10 +1,10 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Functions for the switches and buttons connected to U4 [PCA9555 16-way GPIO]
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: switch
@@ -22,7 +22,7 @@ PCA5555 GPIO Expander Datasheet:
 https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
 
 """
-import yrk.settings as s
+import yrk.settings as s, yrk.utils as utils
 import smbus2 #I2C function
 import time, logging, os
 
@@ -56,7 +56,10 @@ def update_switch_gpio_output(new_states):
     OUTPUT_PORT = 0x03
     global switch_gpio_output_byte
     switch_gpio_output_byte = new_states
-    if init_okay: i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, OUTPUT_PORT, switch_gpio_output_byte)
+    if init_okay:
+        utils.i2c_lock()
+        i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, OUTPUT_PORT, switch_gpio_output_byte)
+        utils.i2c_unlock()
 
 
 def setup_switch_gpio():
@@ -69,11 +72,12 @@ def setup_switch_gpio():
 
     #Set input 0.0-0.7 and 1.0-1.2 as inverted inputs, 1.3-1.7 as outputs [for LEDs]
     if init_okay:
+        utils.i2c_lock()
         i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x04, 0xFF)                        #Polarity inversion
         i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x05, 0x07)
         i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x06, 0xFF)                        #IO State
         i2c.write_byte_data(s.SWITCH_GPIO_ADDRESS, 0x07, 0x07)
-
+        utils.i2c_unlock()
 
 #Return [11 bit int] value for input registers
 def read_input_registers():
@@ -87,7 +91,10 @@ def read_input_registers():
     if not init_okay:
         logging.error("Call to read switch registered failed")
         return 0
-    return (i2c.read_word_data(s.SWITCH_GPIO_ADDRESS, 0x00) & 0x7FF)
+    utils.i2c_lock()
+    ret_val = (i2c.read_word_data(s.SWITCH_GPIO_ADDRESS, 0x00) & 0x7FF)
+    utils.i2c_unlock()
+    return ret_val
 
 #Return [nibble] value for 4-way dip-switch
 def read_dip_switch():

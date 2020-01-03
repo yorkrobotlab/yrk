@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # York Robotics Kit Python API
 #
-# Version 0.1
+# Version 0.2
 # Utility functions for use with York Robotics Kit
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Dec 2020
 
 """
 .. module:: utils
@@ -16,6 +16,27 @@
 
 import subprocess, os, timeit, time, datetime, logging
 import yrk.settings as s
+
+def i2c_lock():
+    start_time = time.time()
+    while(os.path.isfile(s.I2C_LOCK_FILENAME) and (start_time + s.I2C_TIMEOUT > time.time()) ):
+        time.sleep(0.001)
+    if(start_time + s.I2C_TIMEOUT > time.time()):
+        try:
+            os.mknod(s.I2C_LOCK_FILENAME)
+        except FileExistsError:
+            logging.warning("Cannot write i2c lock file, retrying")
+            i2c_lock()
+    else:
+        logging.error("I2C Lock timed-out, deleting lock file")
+        i2c_unlock()
+        i2c_lock()
+
+def i2c_unlock():
+    try:
+        os.remove(s.I2C_LOCK_FILENAME)
+    except FileNotFoundError:
+        logging.warning("Attempt to remove non-existant I2C lock")
 
 def get_program_filelist():
     filelist =  [f[:-10] for f in os.listdir(s.PROGRAM_FILEPATH) if (os.path.isfile(os.path.join(s.PROGRAM_FILEPATH, f)) and f.endswith('_apihat.py'))]

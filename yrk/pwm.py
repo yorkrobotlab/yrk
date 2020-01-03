@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #
-# York Robotics Kit Python API - Version 0.1
+# York Robotics Kit Python API - Version 0.2
 # Functions for the PCA9685PW PWM Driver [Servo Driver]
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: pwm
@@ -25,7 +25,7 @@ https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf
 
 """
 
-import yrk.settings as s
+import yrk.settings as s, yrk.utils as utils
 import logging, os, smbus2, time
 
 MODE1_REG = 0x00
@@ -120,7 +120,9 @@ def set_prescale_value(psv: int):
     #Prescale can only be reset when SLEEP register is set to 1
     if init_okay:
         set_sleep_mode()
+        utils.i2c_lock()
         pwm_bus.write_byte_data(s.PWM_ADDRESS, PRESCALE_REG, psv)
+        utils.i2c_unlock()
         set_normal_mode()
 
 def set_duty_cycle(output: int,dutycycle_pct: float):
@@ -157,21 +159,30 @@ def set_duty_cycle_raw(output: int,dutycycle_raw: int):
     bytes=[0,0,dutycycle_raw % 256,dutycycle_raw >> 8]
     logging.debug("Setting PWM bytes on channel %d to:" % output)
     logging.debug(bytes)
-    if init_okay: pwm_bus.write_i2c_block_data(s.PWM_ADDRESS, register_address, bytes)
+    if init_okay:
+        utils.i2c_lock()
+        pwm_bus.write_i2c_block_data(s.PWM_ADDRESS, register_address, bytes)
+        utils.i2c_unlock()
 
 #Set MODE1 register to 0x10 [sleep state]
 def set_sleep_mode():
     """Enables sleep mode on PWM driver"""
 
     logging.debug("Setting sleep mode on PCA9685 PWM driver")
-    if init_okay: pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x10)
+    if init_okay:
+        utils.i2c_lock()
+        pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x10)
+        utils.i2c_unlock()
 
 #Set MODE1 register to 0x20 [default on state, auto-increment]
 def set_normal_mode():
     """Disables sleep mode on PWM driver"""
 
     logging.debug("Setting normal mode on PCA9685 PWM driver")
-    if init_okay: pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x20)
+    if init_okay:
+        utils.i2c_lock()
+        pwm_bus.write_byte_data(s.PWM_ADDRESS, MODE1_REG, 0x20)
+        utils.i2c_unlock()
 
 #Test code
 if __name__ == "__main__":

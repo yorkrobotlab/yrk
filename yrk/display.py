@@ -1,10 +1,10 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Functions for the Adafruit PiOLED [SSD1306_128_32] display
 # Datasheet: https://cdn-learn.adafruit.com/downloads/pdf/adafruit-pioled-128x32-mini-oled-for-raspberry-pi.pdf
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: display
@@ -21,14 +21,16 @@ functions to display graphics and text on the display.
 """
 
 import time, logging, subprocess, Adafruit_SSD1306, os
-import yrk.settings as s
+import yrk.settings as s, yrk.utils as utils
 
 from PIL import Image, ImageDraw, ImageFont
 
 OLED_BUS = s.OLED_BUS  # The display is attached to bus 5, which translates to RPi4 bus i2c_12
 
 try:
+   utils.i2c_lock()
    disp = Adafruit_SSD1306.SSD1306_128_32(rst=None,i2c_bus=OLED_BUS)
+   utils.i2c_unlock()
 except FileNotFoundError:
    s.HAS_DISPLAY=False
    s.BUS_ERROR=True
@@ -51,14 +53,18 @@ draw_image = Image.new('1', (width, height))
 # Clear display.
 def clear():
     """A function to clear the display"""
+    utils.i2c_lock()
     disp.clear()
     disp.display()
+    utils.i2c_unlock()
 
 # Initialize library.
 def init_display() -> bool :
     """A function to initialise and clear the display"""
     if not s.HAS_DISPLAY: return False
+    utils.i2c_lock()
     disp.begin()
+    utils.i2c_unlock()
     clear()
     return True
 
@@ -74,8 +80,10 @@ def display_image(image):
     if(s.HAS_DISPLAY):
         if(s.DISPLAY_ROTATED): image = image.transpose(Image.ROTATE_180)
         try:
+            utils.i2c_lock()
             disp.image(image)
             disp.display()
+            utils.i2c_unlock()
         except IOError:
             logging.warning("IO Error writing to OLED display")
     else: logging.debug("Call to display_image ignored; display disabled")

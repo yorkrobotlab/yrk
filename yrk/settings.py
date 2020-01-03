@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # York Robotics Kit Python API
 #
-# Version 0.1
+# Version 0.2
 #
 # Settings and Constants File
 #
@@ -9,7 +9,7 @@
 
 import logging,sys
 
-VERSION_STRING="0.1.200101"
+VERSION_STRING="0.2.200103"
 
 # Set the Python logging level for log files; recommend INFO for deployment and DEBUG for debugging
 FILE_LOGGING_MODE = logging.DEBUG
@@ -129,7 +129,9 @@ ROBOT_SENSOR_MODEL = [
 
 SENSOR_PORT_LIST        = [3,4,5]                                               #The I2C ports which will be scanned for sensors
 
-
+#I2C Lock settings
+I2C_LOCK_FILENAME = "/mnt/ramdisk/i2c_lock"
+I2C_TIMEOUT = 0.05
 
 # The following settings are only used when a YRL015 switch board is NOT connected
 ENABLE_DEMO_MODE        = False

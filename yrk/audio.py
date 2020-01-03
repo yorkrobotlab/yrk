@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Functions for audio output
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: audio

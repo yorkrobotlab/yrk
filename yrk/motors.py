@@ -1,10 +1,10 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Functions for the i2c based motor drivers
 # Datasheet: http://www.ti.com/lit/ds/symlink/drv8830.pdf
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: motors
@@ -29,7 +29,7 @@ DRV8830 Data Sheet:
 https://www.ti.com/lit/ds/symlink/drv8830.pdf
 """
 
-import yrk.settings as s
+import yrk.settings as s, yrk.utils as utils
 import smbus2, logging
 import time, sys, os
 
@@ -109,7 +109,10 @@ def set_motor_speed(motor,speed):
     else:
         logging_mode("Setting motor {} speed to {} [{}V] forwards".format(motor,integer_speed,(0.08 * integer_speed)))
         byte = ( integer_speed << 2 ) + 2
-  if init_okay: i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
+  if init_okay:
+      utils.i2c_lock()
+      i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
+      utils.i2c_unlock()
 
 #Set all motors to coast
 def stop_all_motors():
@@ -134,7 +137,10 @@ def brake_motor(motor):
   brake_states[motor]=True
   byte = 0x03  # IN1 & IN2 both high = brake
   logging_mode("Setting motor %d to brake" % motor)
-  if init_okay: i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
+  if init_okay:
+      utils.i2c_lock()
+      i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
+      utils.i2c_unlock()
 
 #Test code
 if __name__ == "__main__":

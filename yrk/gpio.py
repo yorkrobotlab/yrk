@@ -1,10 +1,10 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Functions for the GPIO expansion and switches outputs from U13 [PCA9555 16-way GPIO]
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: gpio
@@ -31,7 +31,7 @@ PCA5555 GPIO Expander Datasheet:
 https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
 
 """
-import yrk.settings as s
+import yrk.settings as s, yrk.utils as utils
 import smbus2 #I2C function
 import time, logging, os
 
@@ -68,18 +68,22 @@ def setup_user_gpio():
 
     #Set input 0.0-0.7 and 1.0-1.2 as inverted inputs, 1.3-1.7 as outputs [for LEDs]
     if init_okay:
+        utils.i2c_lock()
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x02, s.USER_GPIO_OUTPUT_STATE)    #Output register [if]
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, 0x00)
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x04, s.USER_GPIO_INVERTED)        #Polarity inversion
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x05, 0x8F)
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x06, s.USER_GPIO_MODE)            #Mode register []
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x07, 0x8F)
-
+        utils.i2c_unlock()
 
 def update_switched_gpio_outputs():
     """Sends i2c command to set the switched outputs based on stored variables"""
 
-    if init_okay: i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, (switched_output_5V << 4) + (switched_output_12V << 5) + (motor_fault_led << 6))
+    if init_okay:
+        utils.i2c_lock()
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, (switched_output_5V << 4) + (switched_output_12V << 5) + (motor_fault_led << 6))
+        utils.i2c_unlock()
 
 def set_switched_output_5V(state):
     """A function to enable the 5V switched output
@@ -134,7 +138,10 @@ def read_user_gpio():
     if not init_okay:
         logging.error("Call to read user GPIO failed")
         return 0
-    return (i2c.read_word_data(s.USER_GPIO_ADDRESS, 0x00))
+    utils.i2c_lock()
+    ret_val = i2c.read_word_data(s.USER_GPIO_ADDRESS, 0x00)
+    utils.i2c_unlock()
+    return ret_val
 
 def read_motor_fault():
     return ((read_user_gpio() & 0x0F00) >> 8)
