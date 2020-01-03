@@ -33,7 +33,8 @@ import yrk.settings as s
 import smbus2, logging
 import time, sys, os
 
-silent = False
+# logging_mode = logging.info           #Send all messages to info logging level
+logging_mode = logging.debug          #Send all messages to debug logging level
 
 try:
   i2c = smbus2.SMBus(s.YRL040_BUS)                                         #The motor drivers are attached to the YRL040 3.3V I2C Bus
@@ -99,17 +100,14 @@ def set_motor_speed(motor,speed):
   brake_states[motor]=False
   motor_speeds[motor]=speed
   if speed == 0:
-    if not silent:
-        logging.info("Setting motor %d to coast" % motor)
+    logging_mode("Setting motor %d to coast" % motor)
   else:
     integer_speed = get_integer_speed(speed)
     if speed < 0:
-        if not silent:
-            logging.info("Setting motor {} speed to {} [{}V] backwards".format(motor,integer_speed,(0.08 * integer_speed)))
+        logging_mode("Setting motor {} speed to {} [{}V] backwards".format(motor,integer_speed,(0.08 * integer_speed)))
         byte = ( integer_speed << 2 ) + 1
     else:
-        if not silent:
-            logging.info("Setting motor {} speed to {} [{}V] forwards".format(motor,integer_speed,(0.08 * integer_speed)))
+        logging_mode("Setting motor {} speed to {} [{}V] forwards".format(motor,integer_speed,(0.08 * integer_speed)))
         byte = ( integer_speed << 2 ) + 2
   if init_okay: i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
 
@@ -135,8 +133,7 @@ def brake_motor(motor):
   global brake_states
   brake_states[motor]=True
   byte = 0x03  # IN1 & IN2 both high = brake
-  if not silent:
-    logging.info("Setting motor %d to brake" % motor)
+  logging_mode("Setting motor %d to brake" % motor)
   if init_okay: i2c.write_byte_data(s.MOTOR_ADDRESSES[motor], 0, byte)
 
 #Test code

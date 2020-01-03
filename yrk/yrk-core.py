@@ -35,23 +35,21 @@ closing the DASH-DAQ web interface is DIP switch 3 is enabled and disabled.
 
 #Setup settings file and log
 import yrk.settings as settings, logging, os
-
-settings.init()
-settings.setup_logger("yrk-core")
+import dashserver.server as server
 
 import threading,time, sys, subprocess, signal
+import multiprocessing as mp
+import psutil
 import yrk.power as power
 import yrk.switch as switch
 import yrk.utils as utils
 import yrk.led as led
 import yrk.display as display
 import yrk.audio as audio
-
-logging.info("York Robotics Kit Core Server [yrk-core.py] Started - Version %s" % (settings.VERSION_STRING))
+import yrk.motors as motors
 
 #Setup GPIO library and interrupt pins
 import RPi.GPIO as GPIO
-
 
 #Globals
 core_running = True
@@ -63,12 +61,19 @@ battery_warning_state = 0
 temperature_warning_state = 0
 ros_running = False
 demo_running = False
+dash_server_process = None
 
 def switch_interrupt_callback(pin):
   global switch_check_requested
   switch_check_requested = True
 
 def main():
+  #mp.set_start_method('spawn')
+  settings.init()
+  settings.setup_logger("yrk-core")
+  logging.info("York Robotics Kit Core Server [yrk-core.py] Started - Version %s" % (settings.VERSION_STRING))
+  logging.info("yrk-core PID: %d " % (os.getpid()))
+  reset_all()
   #Setup GPIO pins, interrupts
   GPIO.setmode(GPIO.BCM)
   GPIO.setup(settings.SWITCH_INTERRUPT_PIN,GPIO.IN,pull_up_down=GPIO.PUD_UP)
@@ -102,34 +107,67 @@ def stop_ros():
     else:
         logging.warning("ROS does not appear to be running (no PID file)")
 
+def start_dash():
+    global dash_server_process
+    if not is_dash_running():
+        logging.info("Starting DASH web server")
+        #dash_pid = subprocess.Popen(settings.DASH_LAUNCH_COMMAND).pid
+        #logging.info("PID: %d" % dash_pid)
+        #subprocess.Popen(["python",""])
+        dash_server_process = mp.Process(target=server.index_run)
+        #dash_server_process.daemon=True
+        dash_server_process.start()
+        logging.info("dash server PID: %d " % (dash_server_process.pid))
+        #dash_server_process.join()
+    else:
+        logging.warning("DASH appears to be already running (PID file exists)")
+
+def stop_dash():
+    global dash_server_process
+    if is_dash_running():
+        logging.info("Terminating DASH server")
+        parent = psutil.Process(dash_server_process.pid)
+        for child in parent.children(recursive=True):
+            try:
+                child.kill()
+            except psutil.NoSuchProcess:
+                pass
+        dash_server_process.terminate()
+    else:
+        logging.warning("DASH is not currently running")
+
+
 def dip_switch_handler(current_dip_state,previous_dip_state):
   #The DIP switch has changed state...
-  logging.info('DIP Switch state altered')
+  logging.debug('DIP Switch state altered')
   if current_dip_state & 1 == 1 and previous_dip_state & 1 == 0:
-    logging.info("DIP 1 enabled")
+    logging.debug("DIP 1 enabled")
   if current_dip_state & 1 == 0 and previous_dip_state & 1 == 1:
     demo_mode_enabled = False
-    logging.info("DIP 1 disabled")
+    logging.debug("DIP 1 disabled")
   if current_dip_state & 2 == 2 and previous_dip_state & 2 == 0:
-    logging.info("DIP 2 enabled (starting ROS services)")
+    logging.debug("DIP 2 enabled (starting ROS services)")
     start_ros()
   if current_dip_state & 2 == 0 and previous_dip_state & 2 == 2:
-    logging.info("DIP 2 disabled (stopping ROS services)")
+    logging.debug("DIP 2 disabled (stopping ROS services)")
     stop_ros()
   if current_dip_state & 4 == 4 and previous_dip_state & 4 == 0:
-    logging.info("DIP 3 enabled: Starting DASH-DAQ server")
+    logging.debug("DIP 3 enabled (starting DASH-DAQ server)")
+    start_dash()
   if current_dip_state & 4 == 0 and previous_dip_state & 4 == 4:
-    logging.info("DIP 3 disabled: Stopping DASH-DAQ server")
+    logging.debug("DIP 3 disabled (stopping DASH-DAQ server)")
+    stop_dash()
   if current_dip_state & 8 == 8 and previous_dip_state & 8 == 0:
-    logging.info("DIP 4 enabled: Starting demo mode")
+    logging.debug("DIP 4 enabled: Starting demo mode")
   if current_dip_state & 8 == 0 and previous_dip_state & 8 == 8:
-    logging.info("DIP 4 disabled: Stopping demo mode")
+    logging.debug("DIP 4 disabled: Stopping demo mode")
 
 def is_ros_running():
     return os.path.isfile("/mnt/ramdisk/roslaunch.pid")
 
 def is_dash_running():
-    return False
+    if dash_server_process is None: return False
+    return dash_server_process.is_alive()
 
 def update_dip_leds():
     #Running this function periodically will check if ROS and C
@@ -243,6 +281,11 @@ def start_threads():
         update_dip_ledsThread.daemon = True
         update_dip_ledsThread.start()
 
+def reset_all():
+    motors.stop_all_motors()
+    led.set_colour_solid(0)
+    display.clear()
+
 #Main loop
 def core_loop():
   """Core services loop
@@ -265,17 +308,18 @@ def core_loop():
 def close_program():
     #May want to do graceful exit stuff?
     logging.info("Ending yrk-core and spawned processes.")
+    reset_all()
     sys.exit()
 
 if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        logging.critical("Ctrl-C pressed")
+        logging.info("Ctrl-C pressed")
         pass
     except:
         logging.error("Unexpected error: %s" % (sys.exc_info()[0]))
         raise
     #finally:
     #    close_program()
-close_program()
+    close_program()

@@ -13,7 +13,7 @@ VERSION_STRING="0.1.200101"
 
 # Set the Python logging level for log files; recommend INFO for deployment and DEBUG for debugging
 FILE_LOGGING_MODE = logging.DEBUG
-CONSOLE_LOGGING_MODE = logging.DEBUG  #Cannot be a lower level than FILE_LOGGING_MODE
+CONSOLE_LOGGING_MODE = logging.INFO  #Cannot be a lower level than FILE_LOGGING_MODE
 
 
 YRL039_ADDRESS          = 0x39                                                  #The I2C address for the ATMega on the YRL039 Power Supply Board
@@ -73,6 +73,7 @@ ROS_ADC_PUBLISHER_RATE = 5                                                      
 ROS_SWITCH_PUBLISHER_RATE = 5							#Refresh rate [Hz] of button messages
 ROS_PID_FILE = RAMDISK_FILEPATH+"/roslaunch.pid"
 ROS_LAUNCH_COMMAND = ["roslaunch","--pid="+ROS_PID_FILE,"yrk_ros","yrk.launch"] #Command to be executed [using subprocess.Popen()] when ROS is launched by YRK-Core
+DASH_LAUNCH_COMMAND = ["python","--pid="+ROS_PID_FILE,"yrk_ros","yrk.launch"] #Command to be executed [using subprocess.Popen()] when ROS is launched by YRK-Core
 
 
 #YRK-core settings
