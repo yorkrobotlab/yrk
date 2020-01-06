@@ -94,6 +94,11 @@ PCB_CRITICAL_TEMP = 45                                                          
 PCB_SHUTDOWN_TEMP = 50                                                          #PCB forced shutdown temperature, recommend ~50C
 USE_DIP_FUNCTIONS = True                                                        #If True, yrk-core uses DIP 2 for ROS, DIP 3 for DASH server and DIP 4 for DEMO
 USE_DIP_LEDS = True                                                             #If true, yrk-core will set DIP LEDs based on program state
+SWITCH_STATUS_FILENAME = RAMDISK_FILEPATH+"/switch.dat"                         #The most recent switch state [when read following interrupt] is saved to this file for processing by ROS publisher
+
+#I2C Lock settings
+I2C_LOCK_FILENAME = RAMDISK_FILEPATH+"/i2c_lock"
+I2C_TIMEOUT = 0.05
 
 #Selftest [examples/selftest.py] override settings
 IGNORE_PWM_FAILURE = True                                                       #If true, fault in PWM I2C will be ignored
@@ -129,9 +134,7 @@ ROBOT_SENSOR_MODEL = [
 
 SENSOR_PORT_LIST        = [3,4,5]                                               #The I2C ports which will be scanned for sensors
 
-#I2C Lock settings
-I2C_LOCK_FILENAME = "/mnt/ramdisk/i2c_lock"
-I2C_TIMEOUT = 0.05
+
 
 # The following settings are only used when a YRL015 switch board is NOT connected
 ENABLE_DEMO_MODE        = False

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Core services
 #
 # In normal use, a single instance of this should be run as a program when
@@ -23,7 +23,7 @@ which are periodically checked:
  * Low and critical battery level monitoring
  * High and critical temperature monitoring
  * Fault conditions and low-voltage on the aux- and pi- supply rails
- * Monitoring of DIP-switches and kill-switch
+ * Monitoring of DIP-switches and kill-switch, creating switch status file
 
 The module is responsible for handling DIP-switch changes.  It is by default
 run automatically by the bootscript.sh script if DIP switch 1 is enabled.
@@ -187,6 +187,8 @@ def check_switch_state():
     #Check if the switches have changed state (false interrupts eg bounce possible...)
     if previous_switch_state != current_switch_state:
         logging.debug("Switch handler called [switch state %X]" % (current_switch_state))
+        with open(settings.SWITCH_STATUS_FILENAME, 'w') as switchstate_file:
+            switchstate_file.write("%d" % (current_switch_state))
         current_dip_state = current_switch_state % 16
         previous_dip_state = previous_switch_state % 16
         if current_dip_state != previous_dip_state:
