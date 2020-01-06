@@ -1,5 +1,7 @@
-uint8 motor_index
-float32 speed
-bool brake_mode
+string message_1
+string message_2
+uint8 number_of_lines
+bool wrap_text
+bool warning 
 ---
 bool success

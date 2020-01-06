@@ -5,4 +5,5 @@
  <node name="switched_output_server" pkg="yrk_ros" type="switched_output_server.py" />
  <node name="led_server" pkg="yrk_ros" type="led_server.py" />
  <node name="motor_server" pkg="yrk_ros" type="motor_server.py" />
+ <node name="display_server" pkg="yrk_ros" type="display_server.py" />
 </launch>

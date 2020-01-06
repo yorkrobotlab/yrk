@@ -60,6 +60,7 @@ find_package(catkin REQUIRED COMPONENTS
    LED.srv
    SwitchedOutput.srv
    Motor.srv
+   Display.srv
  )
 
 ## Generate actions in the 'action' folder

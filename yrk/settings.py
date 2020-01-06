@@ -83,13 +83,20 @@ ENABLE_BATTERY_MONITOR    = True                                                
 ENABLE_TEMPERATURE_MONITOR = True                                               #If enabled yrk-core.py will display visual+audible warnings when cpu\pcb temperature high
 BATTERY_CRITICAL_SHUTDOWN = True                                                #If enabled, system will force shutdown when Vbatt<BATTERY_SHUTDOWN_VOLTAGE
 TEMPERATURE_CRITICAL_SHUTDOWN = True                                            #If enabled, system will force shutdown when CPU Temp<CPU_SHUTDOWN_TEMP or PCB Temp<PCB_SHUTDOWN_TEMP
-BATTERY_LOW_VOLTAGE = 10.2                                                      #Voltage at which low voltage warning given
-BATTERY_CRITICAL_VOLTAGE = 9.2                                                  #Voltage at which critical voltage warning given
-BATTERY_SHUTDOWN_VOLTAGE = 8.9                                                  #Enforced shutdown voltage
+BATTERY_CELLS = 2                                                               #Set to 2 for 2-cell Li-Po (7.2 - 7.4V) or 3 for 3-cell Li-Po(11.1V)
+if BATTERY_CELLS == 2:
+    BATTERY_LOW_VOLTAGE = 6.2                                                   #Voltage at which low voltage warning given
+    BATTERY_CRITICAL_VOLTAGE = 5.8                                              #Voltage at which critical voltage warning given
+    BATTERY_SHUTDOWN_VOLTAGE = 5.6                                              #Enforced shutdown voltage
+else:
+    BATTERY_LOW_VOLTAGE = 10.2                                                  #Voltage at which low voltage warning given
+    BATTERY_CRITICAL_VOLTAGE = 9.2                                              #Voltage at which critical voltage warning given
+    BATTERY_SHUTDOWN_VOLTAGE = 8.9                                              #Enforced shutdown voltage
+
 CPU_WARNING_TEMP = 65                                                           #CPU warning temperature, recommend ~65C for Pi 4 and ~60C for Pi 3
 CPU_CRITICAL_TEMP = 75                                                          #CPU critical temperature, recommend ~75C for Pi 4 and ~65C for Pi 3
 CPU_SHUTDOWN_TEMP = 82                                                          #CPU shutdown temperature, recommend ~82C for Pi 4 and ~72C for Pi 3
-PCB_WARNING_TEMP = 39                                                           #PCB warning temperature, recommend ~40C
+PCB_WARNING_TEMP = 40                                                           #PCB warning temperature, recommend ~40C
 PCB_CRITICAL_TEMP = 45                                                          #PCB critical temperature, recommend ~45C
 PCB_SHUTDOWN_TEMP = 50                                                          #PCB forced shutdown temperature, recommend ~50C
 USE_DIP_FUNCTIONS = True                                                        #If True, yrk-core uses DIP 2 for ROS, DIP 3 for DASH server and DIP 4 for DEMO
