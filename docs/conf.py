@@ -13,12 +13,12 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'YRK Python'
-copyright = '2019, James Hilder'
+project = 'York Robotics Kit'
+copyright = '2020, James Hilder'
 author = 'James Hilder'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = '0.2.0'
 
 
 # -- General configuration ---------------------------------------------------

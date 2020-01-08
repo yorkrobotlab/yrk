@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # Curses console: A console program for the York Robotics Kit
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: console
@@ -29,6 +29,7 @@ import yrk.power as power, yrk.switch as switch, yrk.gpio as gpio, yrk.led as le
 import yrk.pwm as pwm
 import curses 	  # For fancy console over-writing
 from curses import wrapper
+import logging    # For {pre-curses} error logging
 import os         # For call i2cdetect for sensor detection
 import threading  # Run the sensor polling as a thread
 import sys        # For clean system exit
@@ -37,6 +38,7 @@ import math       # For math functions
 import time       # For timer\sleep functions
 from array import *
 
+pwm_enabled = True
 running = True
 selected_index = 0
 led_index = 0
@@ -44,14 +46,9 @@ led_brightness = 3
 switched_out_5V = True #Init as true but will be toggled when toggle_5V_SO is called
 switched_out_12V = True
 display_pwm_as_microseconds = True
+pwm_periods = 0
 
-pwm.set_pwm_frequency(50.0)
-default_servo_period_raw = pwm.calculate_nearest_duty_cycle_to_period(0.0015)
-pwm_periods = [default_servo_period_raw] * 8
 
-gpio.setup_user_gpio()
-switch.setup_switch_gpio()
-motors.stop_all_motors()
 
 def update_servo_period(output,increment):
     global pwm_periods
@@ -61,7 +58,8 @@ def update_servo_period(output,increment):
     display_value = pwm_periods[output]
     if display_pwm_as_microseconds: display_value = int(1000000 * pwm.estimate_on_time(pwm_periods[output]))
     servo_box.addstr(1,(8*output) + 4,"%4d" % display_value, curses.A_BOLD)
-    pwm.set_duty_cycle_raw(output,pwm_periods[output])
+    if pwm_enabled:
+        pwm.set_duty_cycle_raw(output,pwm_periods[output])
 
 
 def update_led_brightness(increment):
@@ -197,8 +195,18 @@ def take_readings():
 
 def main(stdscr):
     #Don't really like this long list of globals but was needed adapt older version to use curses wrapper
-    global title_box,power_box,adc_box,servo_box,motor_box,so_box,led_box,sw_push_box,sw_0_box,sw_dip0_box,sw_dip1_box,sw_dip2_box,sw_dip3_box,sw_left_box,sw_right_box,sw_up_box,sw_down_box,sw_1_box
-    global running, selected_index
+    global title_box,pwm_periods,power_box,adc_box,servo_box,motor_box,so_box,led_box,sw_push_box,sw_0_box,sw_dip0_box,sw_dip1_box,sw_dip2_box,sw_dip3_box,sw_left_box,sw_right_box,sw_up_box,sw_down_box,sw_1_box
+    global pwm_enabled,running, selected_index
+    try:
+        pwm.set_pwm_frequency(50.0)
+    except OSError:
+        logging.warning("PWM I2C Error: Disabling PWM functionality")
+        pwm_enabled = False
+    default_servo_period_raw = pwm.calculate_nearest_duty_cycle_to_period(0.0015)
+    pwm_periods = [default_servo_period_raw] * 8
+    gpio.setup_user_gpio()
+    switch.setup_switch_gpio()
+    motors.stop_all_motors()
     #Now initial setup is complete, we can create the main curses window
     curses.cbreak()	# Lets program react to keypresses without Enter
     curses.noecho()	# Turn off automatic echoing of keys to screen
@@ -218,7 +226,7 @@ def main(stdscr):
     title_box = curses.newwin(3,76,1,2) #Height,width,Y,X
     title_box.attron(curses.color_pair(3)  )
     title_box.box()
-    title_box.addstr (1,1,'York Robotics Kit Console                    York Robotics Laboratory 2019',curses.A_BOLD)
+    title_box.addstr (1,1,'York Robotics Kit Console V0.2               York Robotics Laboratory 2020',curses.A_BOLD)
     title_box.immedok(True)
     title_box.refresh()
 
@@ -380,7 +388,7 @@ def main(stdscr):
 #Program code
 if __name__ == "__main__":
     #Parse command line using Argument Parser
-    parser = argparse.ArgumentParser("curses_console.py : Display YRK data in a curses-based console")
+    parser = argparse.ArgumentParser("console.py : Display YRK data in a curses-based console")
     parser.add_argument("-s","--silent",help="Disable non-error std-out messages",action="store_true")
     args = parser.parse_args()
     wrapper(main)

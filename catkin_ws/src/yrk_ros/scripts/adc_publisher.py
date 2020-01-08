@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 # York Robotics Kit ROS (Python) API
-# Version 0.1
+# Version 0.2
 # ADC Publisher: ROS publisher service for the ADC
-# James Hilder, York Robotics Laboratory, Nov 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 
 """

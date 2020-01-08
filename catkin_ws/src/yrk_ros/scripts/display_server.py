@@ -12,29 +12,38 @@
 
 .. moduleauthor:: James Hilder <github.com/jah128>
 
-Displays lines of text [can autowrap into ]
-The message expects 3 arguments:
-string message_1
-string message_2      [Only used if number_of_lines = 2, warning = false]
-uint8 number_of_lines
-bool wrap_text        [Shrink font + wrap text over multiple lines if needed]
-bool warning
----
-bool success
+The ``display_server.py`` script contains the code for the *display_service* ROS service in the *yrk-ros* library.
+This provides the functionality to display text, warnings and to clear the I2C OLED module, using functions from the :mod:`yrk.display` core module.
 
-Logic:
--If number of lines > 2 exit with failure
--If number of lines = 0 clear display
--If warning is true, display message_1 as a warning [ignore number_of_lines, wrap_text, message_2]
--Otherwise call 1- or 2- line wrapped or normal functions based on settings
+The service message is defined in the file *Display.srv* and contains 5 input fields, shown in the table below, and one response field (*bool* **success**).
 
-Usage Example:
+======   ===============  ======
+Type     Name             Notes
+======   ===============  ======
+string   message_1
+string   message_2        Only used when *number_of_lines==2* and *warning==false*
+unit8    number_of_lines  Range 0-2, 0=clear display
+bool     wrap_text        Shrinks font, wraps text over 2 lines if needed
+bool     warning          Displays ~10 chars text [message_1] with warning icon
+======   ===============  ======
 
-rosservice call /display_service "{message_1: '', message_2: '', number_of_lines: 0, wrap_text: false, warning: false}"
+The Display service message is processed using the following logic:
 
-Tip:
+* If *number_of_lines*>2 exit with failure
+* If *number_of_lines* =0 clear display
+* If *warning* is true, display *message_1* as a warning (ignore *number_of_lines*, *wrap_text*, *message_2*)
+* Otherwise call 1- or 2- line wrapped or normal functions based on settings
 
-Use tab completion on rosservice call /display_service to prepare above macro, works elsewhere too!
+To run outside of launch file::
+
+  rosrun yrk_ros adc_publisher.py
+
+Usage Example::
+
+  rosservice call /display_service "{message_1: '', message_2: '', number_of_lines: 0, wrap_text: false, warning: false}"
+
+
+.. note::  Use tab completion on rosservice call */display_service* to prepare above macro, works elsewhere too!
 
 
 """
