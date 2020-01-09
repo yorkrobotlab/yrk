@@ -31,6 +31,7 @@ Assuming it is, the module then handles launching the ROS services if DIP switch
 2 is enabled [and terminating them if is disabled], and likewise launching and
 closing the DASH-DAQ web interface is DIP switch 3 is enabled and disabled.
 
+
 """
 
 #Setup settings file and log

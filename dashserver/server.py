@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.2
 # DASH-DAQ Server: A web server for the York Robotics Kit
 # James Hilder, York Robotics Laboratory, Jan 2020
 
@@ -94,8 +94,9 @@ if(settings.ENABLE_ROBOT_TAB): tab_list = [dcc.Tab(label='Robot', value='robot-t
 tab_list.extend([
     dcc.Tab(label='System', value='system-tab', style=tab_style, selected_style=tab_selected_style),
     dcc.Tab(label='Control', value='control-tab', style=tab_style, selected_style=tab_selected_style),
-    dcc.Tab(label='Analogue', value='analog-tab', style=tab_style, selected_style=tab_selected_style),
-    dcc.Tab(label='Camera', value='camera-tab', style=tab_style, selected_style=tab_selected_style)
+    dcc.Tab(label='Sensors', value='analog-tab', style=tab_style, selected_style=tab_selected_style),
+    dcc.Tab(label='Camera', value='camera-tab', style=tab_style, selected_style=tab_selected_style),
+    dcc.Tab(label='Documents', value='documents-tab', style=tab_style, selected_style=tab_selected_style)
 ])
 
 app.layout = html.Div(
@@ -133,8 +134,10 @@ app.config["suppress_callback_exceptions"] = True
               [Input('tabs', 'value')])
 def render_content(tab):
     if tab == 'camera-tab': return camera_tab.layout
-
+    elif tab == 'documents-tab':
+        return html.Iframe(src='html/index.html')
     return ""
+
     # if tab == 'system-tab': return system_tab.layout
     # elif tab == 'control-tab': return control_tab.layout
     # elif tab == 'camera-tab': return camera_tab.layout
@@ -142,7 +145,7 @@ def render_content(tab):
     # elif tab == 'robot-tab': return robot_tab.layout
 
 def index_run():
-    app.run_server(host='0.0.0.0',port=8082,debug=True)
+    app.run_server(host='0.0.0.0',debug=True,port=8080)
 
 if __name__ == '__main__':
     index_run()

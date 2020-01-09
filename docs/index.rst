@@ -9,6 +9,8 @@ York Robotics Kit Python API Documentation
    :maxdepth: 2
    :caption: Contents:
 
+.. include:: userguide.rst
+
 Core Modules
 ============
 
