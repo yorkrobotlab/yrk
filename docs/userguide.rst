@@ -19,9 +19,9 @@ Construction
 
    **1.0** *[Sep 2019]* Original version as seen in pictures, models and diagrams
 
-   **1.1** *[Dec 2019]* Navigation switch changed to surface-mount model
+   **1.1** *[Dec 2019]* Navigation switch changed to surface-mount model, support for 3.5mm screw terminals for motors added.
 
-This document assumes PCBs have been manufactured and all components assembled.
+This document assumes PCBs have been manufactured and all components assembled **(see separate documentation for PCB construction)**
 The schematic diagrams and layout documents are included as Appendices.
 Both PCBs are two-layer boards and designed to be both relatively cheap to manufacture and relatively easy to assemble.
 
@@ -29,9 +29,19 @@ Both PCBs are two-layer boards and designed to be both relatively cheap to manuf
 YRL039 Power Supply
 +++++++++++++++++++
 
+
+.. figure:: /images/yrl039.jpg
+    :width: 300px
+    :height: 369px
+    :alt: 3D rendering of the top of the YRL039 power supply
+
+    YRL039 Power Supply
+
+
+
 The YRL039 Power Supply Board as designed to serve five main functions:
 
-* Take a battery or DC input and convert into stable, seperate 5V supplies.  Each of the 2 5V supplies is rated to provide 2.5A+ current.  One supplies the Raspberry Pi *(including USB peripherals)*, the other provides the **5V_AUX** rail for most other components.
+* Take a battery or DC input and convert into stable, separate 5V supplies.  Each of the 2 5V supplies is rated to provide at least **2.5A** current.  One supplies the Raspberry Pi *(including USB peripherals)*, the other provides the **5V_AUX** rail for most other components.
 
 * Provide an interface between Pi GPIO pins and respective pins on YRL040 PCB.  It was desired to rotate and reduce in size the 40-pin GPIO header on the Pi to allow more space for edge-mount connectors on either side of the YRL040 PCB **(for motors, sensors and servos etc)**.
 
@@ -42,10 +52,20 @@ The YRL039 Power Supply Board as designed to serve five main functions:
 * Provide an 35mm fan based active cooling for the Pi microcontroller, the power supplies and the YRL040 mounted above.
 
 
+All the components except for the fan are mounted to the top-side of the PCB.  The **TPS82130** `TI 3A Step-Down Converter Module <http://www.ti.com/lit/ds/symlink/tps82130.pdf>`_ is core components of each of the two 5V power supplies.
+
+
 YRL040 Main PCB
 +++++++++++++++
 
 The main YRL040 PCB has been designed such that the vast majority of electronic components are surface mounted on the underside of the board.
+
+.. figure:: /images/yrl040.jpg
+    :width: 560px
+    :height: 399px
+    :alt: Bottom and top 3D renderings of the top of the YRL040 PCB
+
+    YRL040 Main PCB *(Bottom and Top Views)*
 
 Assembly
 ++++++++
@@ -66,7 +86,7 @@ Connecting Hardware
 DC Motors
 +++++++++
 
-There are four serial H-Bridge motor drivers, based on the **DRV8830** `TI Motor Driver<http://www.ti.com/lit/ds/symlink/drv8830.pdf>`_.
+There are four serial H-Bridge motor drivers, based on the **DRV8830** `TI Motor Driver <http://www.ti.com/lit/ds/symlink/drv8830.pdf>`_.
 The PCB design limits each motor driver to approximately **800mA** current, powered from the *5V_AUX* supply.  Having all four motors drawing this peak current
 for sustained periods will exceed the rating of the power supply.  This current limit *(and voltage rating)* does restrict the motor driver to using small motors,
 such as the widely-available 3mm shafted **micro-metal gear motors**.  Before using a different size of motor it is recommend to check *(such as by using a bench
