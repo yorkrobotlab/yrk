@@ -1,9 +1,9 @@
 .. include global.rst
 
-.. YRK Python documentation master file
+.. YRK documentation master file
 
-York Robotics Kit Python API Documentation
-==========================================
+York Robotics Kit Documentation
+===============================
 
 .. toctree::
    :maxdepth: 2
