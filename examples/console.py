@@ -12,15 +12,34 @@
 .. moduleauthor:: James Hilder <github.com/jah128>
 
 A terminal-based console that provides feedback on sensor information and allows
-keyboard based control of actuators. The console.py example uses the curses
+keyboard based control of actuators. The console.py example uses the **curses**
 library to allow console over-writing.  It uses line-drawing characters, which
-may not render correctly on default settings on PuTTy; there are work-arounds
-for this [KiTTy is worth looking at as an alternative].
+may not render correctly on default settings on Windows, *kitty* (a fork of *putty*)
+has an ``Allow ACS line drawing in UTF`` setting which allows the
+correct rendering.
 
 
-To run::
+It provides a useful quick test for hardware and also a useful example of how to
+do many low-level API calls.  The console should be run without any other code
+(include ``core.py``) running.  It can be run as follows::
 
+   cd ~/yrk/examples
    python console.py
+
+
+.. figure:: /images/console.png
+     :width: 550px
+     :height: 347px
+     :alt: Screen shot of console.py python program
+
+     Screen shot of ``console.py``
+
+
+
+The cursor keys on the keyboard can be used to move between the different motor, LED and servo options
+(*the console sets the PWM driver up for 1.5mS analogue servos*).  As the console can enable and motors
+and servos it should be used with caution.
+
 
 """
 

@@ -239,30 +239,3 @@ the *ROS* service, a web service and a demo program.  This functionality is prov
 * Switch 2 enables the web service.  This enables a **Flask** webserver running a **Dash** site with **DAQ**
   components and this manual.  By default at ``localhost:8080``.
 * Switch 3 enables the demo program.  [To do...]
-
-
-Console
-^^^^^^^
-
-A **curses** based shell console program has been written that provides a useful quick test for
-hardware and also a useful example of how to do many low-level API calls.  The console should be run
-without any other code (include ``core.py``) running.  It can be run as follows::
-
-   cd ~/yrk/examples
-   python console.py
-
-
-.. figure:: /images/console.png
-     :width: 550px
-     :height: 347px
-     :alt: Screen shot of console.py python program
-
-     Screen shot of ``console.py``
-
-If you are using **ssh** you may find the line drawing characters are not represented properly.  If using
-Windows, *kitty* (a fork of *putty*) has a ``Allow ACS line drawing in UTF`` setting which allows the
-correct rendering.
-
-The cursor keys on the keyboard can be used to move between the different motor, LED and servo options
-(*the console sets the PWM driver up for 1.5mS analogue servos*).  As the console can enable and motors
-and servos it should be used with caution.

@@ -6,11 +6,10 @@
    :maxdepth: 2
    :caption: Contents:
 
-.. include:: userguide.rst
-.. include:: api.rst
-.. include:: examples.rst
-.. include:: ros.rst
-
+   userguide
+   api
+   examples
+   ros
 
 
 *****
