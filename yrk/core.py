@@ -11,12 +11,12 @@
 # James Hilder, York Robotics Laboratory, Jan 2020
 
 """
-.. module:: yrk-core
+.. module:: core
    :synopsis: Core services module
 
 .. moduleauthor:: James Hilder <github.com/jah128>
 
-The yrk-core module provides the low level hypervisory functions for normal
+The core module provides the low level hypervisory functions for normal
 use of the York Robotics Kit.  This includes the following list of operations,
 which are periodically checked:
 
@@ -71,9 +71,9 @@ def switch_interrupt_callback(pin):
 def main():
   #mp.set_start_method('spawn')
   settings.init()
-  settings.setup_logger("yrk-core")
-  logging.info("York Robotics Kit Core Server [yrk-core.py] Started - Version %s" % (settings.VERSION_STRING))
-  logging.info("yrk-core PID: %d " % (os.getpid()))
+  settings.setup_logger("core")
+  logging.info("York Robotics Kit Core Server [core.py] Started - Version %s" % (settings.VERSION_STRING))
+  logging.info("YRK core PID: %d " % (os.getpid()))
   reset_all()
   #Setup GPIO pins, interrupts
   GPIO.setmode(GPIO.BCM)
@@ -311,7 +311,7 @@ def core_loop():
 
 def close_program():
     #May want to do graceful exit stuff?
-    logging.info("Ending yrk-core and spawned processes.")
+    logging.info("Ending yrk.core and spawned processes.")
     reset_all()
     sys.exit()
 

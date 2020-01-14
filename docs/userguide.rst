@@ -1,8 +1,10 @@
 .. include global.rst
 .. YRK User Guide
 
+
+**********
 User Guide
-==========
+**********
 
 Overview
 --------
@@ -37,7 +39,7 @@ Both PCBs are two-layer boards and designed to be both relatively cheap to manuf
 
 
 YRL039 Power Supply
-+++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^
 
 
 .. figure:: /images/yrl039.jpg
@@ -66,7 +68,7 @@ All the components except for the fan are mounted to the top-side of the PCB.  T
 
 
 YRL040 Main PCB
-+++++++++++++++
+^^^^^^^^^^^^^^^
 
 The main YRL040 PCB has been designed such that the vast majority of electronic components are surface mounted on the underside of the board.
 
@@ -81,7 +83,7 @@ The main YRL040 PCB has been designed such that the vast majority of electronic 
 
 
 Assembly
-++++++++
+^^^^^^^^
 
 .. figure:: /images/exploded_view.jpg
     :width: 600px
@@ -98,7 +100,7 @@ PCB above the **YRL039** power supply PCB.  It is recommended that *M:F* **(male
 The assembly can be mounted inside a further case, described below, or can be mounted directly onto a chassis or further standoffs.  Consideration of the airflow path should be taken, particularly when fully enclosed inside a robot.  The Raspberry Pi alone can generate a significant amount of heat and rapidly reaches a point at which it will throttle clock speed if it is not adequately cooled.
 
 Case
-++++
+^^^^
 
 .. figure:: /images/case.jpg
     :width: 600px
@@ -114,7 +116,7 @@ Connecting Hardware
 -------------------
 
 DC Motors
-+++++++++
+^^^^^^^^^
 
 There are four serial H-Bridge motor drivers, based on the **DRV8830** `TI Motor Driver <http://www.ti.com/lit/ds/symlink/drv8830.pdf>`_.
 The PCB design limits each motor driver to approximately **800mA** current, powered from the *5V_AUX* supply.  Having all four motors drawing this peak current
@@ -125,10 +127,6 @@ PSU)* what the stall and no-load currents at **5V**.
 The holes on the unpopulated PCB allow the motors to be connected to either **Wago** push-fit terminals or **(on PCB version 1.1)** 3.5mm pitch screw terminals.
 With either connector, a remaining pair of holes will be accessible on the PCB should a direct soldered lead be required.
 
-Servo Motors
-++++++++++++
-
-The York Robotics Kit is designed to support both standard-analogue servos and also digital servos **(Dynamix AX- and MX- series)**.
 
 Analogue Servos
 ^^^^^^^^^^^^^^^
@@ -164,7 +162,24 @@ driver to control servos can be found in :mod:`examples.console`.
 Digital Servos
 ^^^^^^^^^^^^^^
 
+The York Robotics Kit is designed to support digital servos from the **(Dynamix AX- and MX- series)** via code on the Arduino microcontroller.
+
 To do: This section and code not completed yet!
+
+
+Arduino
+^^^^^^^
+
+The YRK includes a **ATMega328P** microcontroller, running at **5V** and connected to both an
+FTDI serial to USB interface and to the I2C switch (on switch port 5, which is ``/dev/i2c_11`` on Pi 4).
+The microcontroller is effectively a clone of an Arduino Nano board (albeit with a different pin layout).
+
+.. figure:: /images/arduino.jpg
+    :width: 600px
+    :height: 333px
+    :alt: Pinout for ATMega microcontroller expansion
+
+    Pin-out for the ATMega microcontroller *(Arduino nano clone)*
 
 
 Software Setup
@@ -183,7 +198,7 @@ document.  In the default image, the username is **pi** and the password is **ro
 
 
 Boot Procedure
-++++++++++++++
+^^^^^^^^^^^^^^
 
 The image contains entries in the ``.bashrc`` file that set the Python virtual environment to
 **yrk**.  It then looks to see if the device ``/dev/i2c_11`` exists.  If the **YRK** is connected
@@ -208,16 +223,16 @@ To kill Python processes, erase the ramdisk and restart ``bootscript.sh`` quickl
 
 
 Core Program
-++++++++++++
+^^^^^^^^^^^^
 
-The core program :mod:`yrk.yrk-core` performs certain core functions that aim to improve usability
+The core program :mod:`yrk.core` performs certain core functions that aim to improve usability
 and reliability of robot controllers.  This include monitoring battery, temperature and fault
 conditions, and monitoring the user switches.  It also provides the functionality to control
 the *ROS* service, a web service and a demo program.  This functionality is provided through the
 4-way **DIP** switch at the bottom of the kit.
 
 * Switch 0 (*marked as 1 on the switch itself*) determines if the core program should be run on boot.
-  If disabled, ``yrk-core.py`` will not be run.  This is often useful for testing but user needs to
+  If disabled, ``core.py`` will not be run.  This is often useful for testing but user needs to
   remember to keep check on battery and temperature.
 * Switch 1 enables the ROS service using ROS launch.  If the switch is disabled after ROS has been
   launched the process will be killed, allowing a relaunch.
@@ -227,11 +242,11 @@ the *ROS* service, a web service and a demo program.  This functionality is prov
 
 
 Console
-+++++++
+^^^^^^^
 
 A **curses** based shell console program has been written that provides a useful quick test for
 hardware and also a useful example of how to do many low-level API calls.  The console should be run
-without any other code (include ``yrk-core.py``) running.  It can be run as follows::
+without any other code (include ``core.py``) running.  It can be run as follows::
 
    cd ~/yrk/examples
    python console.py
