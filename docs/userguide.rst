@@ -186,8 +186,8 @@ Software Setup
 --------------
 
 This user guide assumes that the micro SD card in the Raspberry Pi is using the pre-built
-**Raspbian** installation created for the York Robotics Kit that includes the **ROS Melodic**,
-**OpenCV 4** and the Python 3 virtual environment with all the prerequisite packages installed,
+**Raspbian** installation (*YRK Raspbian*) created for the York Robotics Kit that includes the
+**ROS Melodic**,  **OpenCV 4** and the Python 3 virtual environment with all the prerequisite packages installed,
 along with a clone of the **Git** repository available at::
 
    https://github.com/yorkrobotlab/yrk
@@ -196,6 +196,25 @@ along with a clone of the **Git** repository available at::
 The detailed software setup procedure followed to create the image is available in a different
 document.  In the default image, the username is **pi** and the password is **robotlab**.
 
+YRK Raspbian
+^^^^^^^^^^^^
+
+This document is written for **YRK Raspbian Build 16/01/2020**.  This build of Raspbian contains 
+the following software installations:
+
+* Raspbian Version: Buster *(Raspbian GNU/Linux 10)*.  Output of ``lsb_release -a``
+
+* Kernel: Linux 4.19.75-v71+ #1270 Sep 24 2019 armv71.  Output of ``uname -a``
+
+* OpenCV: 4.1.1  Output of ``cv2.__version__`` in Python
+
+* ROS: Melodic  Output of ``rosversion -d``
+
+* Arduino:  1.8.10  Output of ``arduino --version``
+
+The **yrk** PYthon virtual environment is preinstalled with a large number of required packages.
+The list of packages can be found in the ``requirements.txt`` file in the ``/home/pi/yrk`` folder,
+or by using the ``pip freeze`` command.
 
 Boot Procedure
 ^^^^^^^^^^^^^^
