@@ -39,7 +39,10 @@ const int red_led = 12;
 const int green_led = 13;
 
 const int activity_led = A6;
-
+const int motor_1_int = 2;
+const int motor_1_dir = 3; 
+const int motor_2_int = A2;
+const int motor_2_dir = A3;
 unsigned long startMillis;
 volatile long enc_1_count = 0;
 volatile long enc_2_count = 0;
@@ -112,6 +115,6 @@ void loop() {
   unsigned long currentMillis = millis() - startMillis;
   if(currentMillis > 1000) startMillis = millis();
   //Heartbeat blink with red led, 100ms every second
-  if(currentMillis < 100) if {(!digitalRead(red_led)) digitalWrite(red_led,1);}
-  else {if digitalRead(red_led) digitalWrite(red_led,0);}
+  if(currentMillis < 100) {if (!digitalRead(red_led)) digitalWrite(red_led,1);}
+  else {if (digitalRead(red_led)) digitalWrite(red_led,0);}
 }

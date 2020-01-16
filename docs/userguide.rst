@@ -220,9 +220,9 @@ First Run
 ^^^^^^^^^
 
 The image is preconfigured to work with the ``robotlab`` wi-fi network at York; if needed, make
-changes to ``/etc/network/interfaces`` before booting using a different system, or connect
-the Pi to a display and configure networking.  Obviously in normal use the YRK is intended to be
-connected to remotely using SSH or VNC etc.
+changes to ``/etc/network/interfaces`` before booting *(by editing the SD card in a different
+Linux system)*, or connect the Pi to a display and configure networking.  Obviously in normal use
+the YRK is intended to be connected to remotely using SSH or VNC etc.
 
 On first boot of a clean install of **YRK Raspbian Build 16/01/2020** it is recommended
 to update the system.  Make sure all DIP switches are in their **OFF** **(down)** position.
@@ -236,6 +236,12 @@ firmware upgrade using ``rpi-eeprom-update``, run ``fixhostname.sh`` to check th
 has been update to the form **rpi-XXXX** *(where XXXX is last 4 digits of MAC address)*.  It
 will then update to the latest codebase for **git** using ``git pull``, and clean and rebuild
 the HTML documentation using ``make clean`` and ``make html`` from the docs folder.
+
+Once the networking is setup and the system updated, the should be able to use the YRK in its
+normal operating mode.  The current release defaults to booting the X-server *(even without display
+attached) and auto-login; it is easy and recommended to change to command-line only using the
+``raspi-config`` tool if graphical user interface isn't needed.  Both SSH and VNC *(remote-desktop)*
+are enabled by default.
 
 
 Boot Procedure
