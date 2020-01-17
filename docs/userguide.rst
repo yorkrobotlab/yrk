@@ -247,8 +247,20 @@ Analogue Inputs
 ^^^^^^^^^^^^^^^
 
 The YRK includes an I2C based, 8-channel, 8-bit analogue to digital converter IC.  Whilst this can be used for anything
-requiring analogue inputs (with a **2.5V** reference voltage), it is primarily intended for use with analogue distance
-sensors manufactured by Sharp, in particular the **2Y0A21** and **2Y0A41** models.
+requiring analogue inputs, it is primarily intended for use with analogue distance
+sensors manufactured by Sharp, in particular the **2Y0A21** and **2Y0A41** models.  The reference voltage is set to **2.5V**,
+meaning the returned value is approximately equal to the voltage mulitplied by 100.
+
+.. figure:: /images/adc.jpg
+    :width: 580px
+    :height: 130px
+    :alt: Pin-out for channels 0-5 and channel 7 of the analog to digital converter
+
+    Analogue input channels 0-5 *(JST PH sockets)* and channel 7
+
+
+Cables
+++++++
 
 .. figure:: /images/sharp.png
     :width: 600px
@@ -257,13 +269,11 @@ sensors manufactured by Sharp, in particular the **2Y0A21** and **2Y0A41** model
 
     Wiring diagram of Sharp Distance Sensors
 
-Cables
-++++++
 
 The Sharp distance sensors use a 3-pin JST PH series connection **(note the newest models use a JCTC connector instead of
 a JST)**.  6 matching JST-PH connections are available on the York Robotics Kit, each providing the analogue-input and 5V
 power supply required by the sensor.  A suitable complete pre-made harness has not been sourced, but it is possible to buy
-pre-crimped leads from JST which make creating harnesses quick and simple [if expensive].
+pre-crimped leads from JST which make creating harnesses quick and simple *(if expensive)*.
 
 ===============   ============  ===================  ======================
 JST Part Number   Farnell Part  Description          Unit Price *[per 100]*
@@ -273,6 +283,8 @@ JST Part Number   Farnell Part  Description          Unit Price *[per 100]*
 PHR-3             3616198       3-pin PH Receptacle  0.032
 ===============   ============  ===================  ======================
 
+To assemble the harness, place one receptacle face-up and the other face-down then connect top-to-top, middle-to-middle and bottom-to-bottom,
+as seen in the photograph below.
 
 .. figure:: /images/jstcable.jpg
     :width: 600px
@@ -293,7 +305,7 @@ Potentiometer
 +++++++++++++
 
 Channel 6 of the ADC is connected to a potentiometer *(variable resistor)* at the top-left of the PCB.  As the pot'
-is rotated from left to right the analogue value will decrease from 255 to 0.
+is rotated clock-wise from left to right the ADC output value will **decrease** from 255 to 0.
 
 Other Inputs
 ++++++++++++
@@ -322,15 +334,25 @@ Switched Outputs
 ^^^^^^^^^^^^^^^^
 
 The board contains a pair of **FET** driven switched outputs which can be used when it is necessary to turn
-on simple switched loads.  One output is connected to the **5V_AUX** supply, the other is marked as **12V** and is
-connected to the battery or DC input.  Both switched outputs are protected by a 1A 0603 quick-blow fuse.
+on simple switched loads.  Typical uses might be powering buzzers and sirens, LED light fittings and lamps,
+beacons, solenoids and relays.  One output is connected to the **5V_AUX** supply, the other is marked as **12V** and is
+connected to the battery or DC input.  Both switched outputs are protected by a 1A 0603 quick-blow fuse.  The outputs are
+connected to 0.1" sockets *(preferred over header as harder to short-circuit)*.
+
+.. figure:: /images/switched-outputs.jpg
+    :width: 561px
+    :height: 300px
+    :alt: Switched output connectors
+
+    Close-up view of 12V and 5V switched output connectors.
+    
 
 It is important to note that the switched outputs use low-side switching, meaning that the **+** output is connected directly
 to the *(5V or battery)* supply rail but the **-** is **not** connected to ground; never use the switched outputs on loads
 that require the grounds to be coupled together.  It is recommended to limit the current on the switched outputs to below 500mA
 if possible.  If a higher current (or circuit with coupled ground) is needed, consider using the switched load to drive a relay
 or solid-state equivalent.   Note that the actual potential difference will be a little lower than the indicated amount due to
-the voltage drop across the **FET**.
+the voltage drop across the **FET**.  Consider using a flyback diode across inductive loads (such as relays and solenoids).
 
 
 Software Setup
