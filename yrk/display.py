@@ -38,11 +38,20 @@ except FileNotFoundError:
 
 
 #Fonts [filepaths in settings.py]
-mono_small = ImageFont.truetype(s.SMALL_MONO,8)
-small_font = ImageFont.truetype(s.SMALL_FONT, 8)
-small_font_bold = ImageFont.truetype(s.SMALL_BOLD, 8)
-medium_font = ImageFont.truetype(s.LARGE_FONT,16)
-large_font = ImageFont.truetype(s.LARGE_FONT,24)
+try:
+    mono_small = ImageFont.truetype(s.SMALL_MONO,8)
+    small_font = ImageFont.truetype(s.SMALL_FONT, 8)
+    small_font_bold = ImageFont.truetype(s.SMALL_BOLD, 8)
+    medium_font = ImageFont.truetype(s.LARGE_FONT,16)
+    large_font = ImageFont.truetype(s.LARGE_FONT,24)
+except OSError:
+    logging.error("Can't read font files");
+    mono_small = ImageFont.load_default()
+    small_font = ImageFont.load_default()
+    small_font_bold = ImageFont.load_default()
+    medium_font = ImageFont.load_default()
+    large_font = ImageFont.load_default()
+
 
 # Create blank image for drawing.
 # Make sure to create image with mode '1' for 1-bit color.
