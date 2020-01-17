@@ -38,7 +38,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-autodoc_mock_imports = ['smbus2','RPi','dash_core_components','Adafruit_SSD1306','rospy']
+autodoc_mock_imports = ['smbus2','RPi','dash_core_components','dash_html_components','Adafruit_SSD1306','rospy']
 
 # -- Options for HTML output -------------------------------------------------
 
