@@ -6,7 +6,9 @@
    :maxdepth: 2
    :caption: Contents:
 
-   userguide
+   introduction
+   hardware
+   software
    api
    examples
    ros
