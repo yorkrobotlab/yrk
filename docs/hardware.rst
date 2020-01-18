@@ -300,6 +300,14 @@ or other outputs if appropriate *(the PCA9685 driver is actually marketed as a L
 Display
 -------
 
+.. figure:: /images/display.jpg
+    :width: 587px
+    :height: 375px
+    :alt: OLED I2C Module attached to the YRK
+
+    Close-up view of Adafruit I2C OLED display module on YRK
+
+
 The board has been designed such that an **Adafruit PiOLED** 128x32 pixel display module can be directly connected to the main board.
 The software library written by Adafruit has been adapted so that it performs more reliably on the switched I2C bus *(note that I2C
 is a relatively slow bus and even small displays take quite a lot of data to drive, so infrequent updates are recommended)*.
