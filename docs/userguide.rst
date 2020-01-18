@@ -155,7 +155,8 @@ Power Supply
 ^^^^^^^^^^^^
 
 The YRK can be powered by any standard 12V power supply with a 2.1mm DC jack (centre positive) and 3A or greater current rating.  Using a tethered power supply such as this is strongly
-recommended to be used as much as possible to preserve battery life if motion of the robot is not required.
+recommended to be used as much as possible to preserve battery life if motion of the robot is not required.  Do not connect a power supply when the battery is connected and vice-versa *(shutdown
+between changing power sources by pressing the power button)*.
 
 
 Battery
@@ -173,7 +174,7 @@ be made to reflect the battery used if not the default 3-cell configuration.
 Only the outer-two connections of the **JST-XH** connector are used.  It is also possible to use the 2.1mm DC jack as the input source.  Always disconnect the battery after use and charge using a
 suitable charger (in a fire-safe bag if using a Li-Po battery pack).  The power supply board is not presently optimised for ultra low-current and the residual current draw (from the ATMega microcontroller)
 will discharge the battery even when beyond a damagingly low value.  General convention suggest a per-cell voltage of 3.0V is the absolute minimum a Li-Po battery should be allowed to discharge to *(ie 9V
-for 11.1V 3-cell battery) before permanent damage is likely to be done.  The Arduino code on the **YRL039** can be configured to automatically switch off power supplies below a critical low voltage but this
+for 11.1V 3-cell battery)* before permanent damage is likely to be done.  The Arduino code on the **YRL039** can be configured to automatically switch off power supplies below a critical low voltage but this
 needs to be correctly configured for the battery technology used.  If the ``core.py`` software is *not* run the user must implement some method of periodically monitoring the battery voltage and provide
 suitable user warnings when low levels are reached, otherwise batteries can rapidly deteriorate.
 
@@ -345,7 +346,7 @@ connected to 0.1" sockets *(preferred over header as harder to short-circuit)*.
     :alt: Switched output connectors
 
     Close-up view of 12V and 5V switched output connectors.
-    
+
 
 It is important to note that the switched outputs use low-side switching, meaning that the **+** output is connected directly
 to the *(5V or battery)* supply rail but the **-** is **not** connected to ground; never use the switched outputs on loads
@@ -353,6 +354,45 @@ that require the grounds to be coupled together.  It is recommended to limit the
 if possible.  If a higher current (or circuit with coupled ground) is needed, consider using the switched load to drive a relay
 or solid-state equivalent.   Note that the actual potential difference will be a little lower than the indicated amount due to
 the voltage drop across the **FET**.  Consider using a flyback diode across inductive loads (such as relays and solenoids).
+
+Raspberry Pi Interfaces
+^^^^^^^^^^^^^^^^^^^^^^^
+
+One consequence of the number of hardware features on the board is that very few Raspberry Pi GPIO pins are available for use.  The
+5 pins that are available (pins 19, 21, 23, 24 and 26) are the pins that can be used as the SPI0 interface on the Raspberry Pi,
+allowing SPI peripherals and expansion to be added to the YRK.  These pins can also be used a general purpose IO pins if the SPI
+interface is not required.
+
+
+.. figure:: /images/rpi-spi.png
+    :width: 600px
+    :height: 211px
+    :alt: View of RPi - SPi connector
+
+    Close-up view of Raspberry Pi SPI interface at top-left of board (rotated 90 degrees)
+
+
+Additional GPIO
+^^^^^^^^^^^^^^^
+
+A bank of 8 user-GPIO pins connected to the bank 0 of the *(U13)* **PCA9555PW** GPIO expansion IC is available for use.  The API for the pins is
+not yet written.
+
+.. figure:: /images/gpio.jpg
+    :width: 600px
+    :height: 235px
+    :alt: View of user GPIO
+
+    Close-up view of 8 user GPIO expansion pins
+    
+
+There are several other expansion pins on the board that can be used as general purpose digital IO pins, for connecting extra hardware
+such as switches, LEDs, transistor switches and others.  The **TCA6507** LED driver that drives the RGB LEDs has one additional output that
+is configured to give a 20mA drive current to an external LED *(or multiple LEDs in series or parallel)*.  The cathode pin of the LED(s) should
+be attached to the LED pin of the ``R.Pi SPI`` header at the top-left of the PCB; the anode can be connected to either a 3.3V or 5V pin as needed
+*(blue and white LEDs may require 5V due to their greater forward voltage)*.  The PWM (analogue servo) outputs can also be used to drive LEDs
+or other outputs if appropriate *(the PCA9685 driver is actually marketed as a LED driver)*.
+
 
 
 Software Setup
