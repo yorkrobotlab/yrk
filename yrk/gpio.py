@@ -70,7 +70,7 @@ def setup_user_gpio():
     if init_okay:
         utils.i2c_lock()
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x02, s.USER_GPIO_OUTPUT_STATE)    #Output register [if]
-        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, 0x00)
+        i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x03, 0x40)
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x04, s.USER_GPIO_INVERTED)        #Polarity inversion
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x05, 0x8F)
         i2c.write_byte_data(s.USER_GPIO_ADDRESS, 0x06, s.USER_GPIO_MODE)            #Mode register []

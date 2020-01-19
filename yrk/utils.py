@@ -25,7 +25,7 @@ def i2c_lock():
         try:
             os.mknod(s.I2C_LOCK_FILENAME)
         except FileExistsError:
-            logging.warning("Cannot write i2c lock file, retrying")
+            logging.debug("Cannot write i2c lock file, retrying")
             i2c_lock()
     else:
         logging.error("I2C Lock timed-out, deleting lock file")

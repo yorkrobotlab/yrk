@@ -2,6 +2,8 @@
 
 .. YRK documentation master file
 
+.. image:: /images/complete.jpg
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

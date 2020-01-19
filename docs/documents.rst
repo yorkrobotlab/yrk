@@ -41,9 +41,9 @@ Datasheets
 
 This table contains internet URLs to most of the core intergrated circuits and modules in use on the **YRL039** and **YRL040** PCBs.
 
-================  ==================  ============================================================================
+================  ==================  ====================================================================================
 Component         Part Name           Datasheet URL
-================  ==================  ============================================================================
+================  ==================  ====================================================================================
 Arduino IC        ATMega328P          `<https://www.microchip.com/wwwproducts/en/ATmega328p>`_
 Serial:USB IC     FTDI FT232RL        `<https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232R.pdf>`_
 Power Supply IC   TPS82130            `<http://www.ti.com/lit/ds/symlink/tps82130.pdf>`_
@@ -51,4 +51,6 @@ GPIO Expander IC  PCA9555             `<https://www.nxp.com/docs/en/data-sheet/P
 LED Driver IC     TCA6507             `<https://www.ti.com/lit/ds/symlink/tca6507.pdf>`_
 Motor Driver IC   DRV8830             `<https://www.ti.com/lit/ds/symlink/drv8830.pdf>`_
 PWM (Servo) IC    PCA9685             `<https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf>`_
-================  ==================  ============================================================================
+Distance Sensor   GP2Y0A21            `<https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y0a21yk_e.pdf>`_
+Distance Sensor   GP2Y0A41            `<https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y0a41sk_e.pdf>`_
+================  ==================  ====================================================================================

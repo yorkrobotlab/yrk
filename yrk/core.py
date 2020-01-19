@@ -48,6 +48,7 @@ import yrk.led as led
 import yrk.display as display
 import yrk.audio as audio
 import yrk.motors as motors
+import yrk.gpio as gpio
 
 #Setup GPIO library and interrupt pins
 import RPi.GPIO as GPIO
@@ -57,7 +58,9 @@ core_running = True
 battery_check_requested = False
 temperature_check_requested = False
 switch_check_requested = True
+gpio_check_requested = True
 previous_switch_state = 0
+previous_gpio_state = 0
 battery_warning_state = 0
 temperature_warning_state = 0
 ros_running = False
@@ -67,6 +70,10 @@ dash_server_process = None
 def switch_interrupt_callback(pin):
   global switch_check_requested
   switch_check_requested = True
+
+def gpio_interrupt_callback(pin):
+  global gpio_check_requested
+  gpio_check_requested = True
 
 def main():
   #mp.set_start_method('spawn')
@@ -79,6 +86,11 @@ def main():
   GPIO.setmode(GPIO.BCM)
   GPIO.setup(settings.SWITCH_INTERRUPT_PIN,GPIO.IN,pull_up_down=GPIO.PUD_UP)
   GPIO.add_event_detect(settings.SWITCH_INTERRUPT_PIN , GPIO.FALLING, switch_interrupt_callback)
+  GPIO.setup(settings.GPIO_INTERRUPT_PIN,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+  GPIO.add_event_detect(settings.GPIO_INTERRUPT_PIN , GPIO.FALLING, gpio_interrupt_callback)
+  #Setup debug LED
+  GPIO.setup(settings.DEBUG_LED_PIN,GPIO.OUT)
+
   #Setup audio thread
   audio.setup_audio()
   #Start update timer threads
@@ -202,6 +214,29 @@ def check_switch_state():
     else:
         logging.debug("Switch handler called; switch state unchanged")
 
+def check_gpio_state():
+    global previous_gpio_state
+    current_gpio_state = gpio.read_user_gpio()
+    #Check if the GPIO input registers have changed state (false interrupts eg bounce possible...)
+    if previous_gpio_state != current_gpio_state:
+        logging.debug("GPIO handler called [gpio state %X]" % (current_gpio_state))
+        with open(settings.GPIO_STATUS_FILENAME, 'w') as gpiostate_file:
+            gpiostate_file.write("%d" % (current_gpio_state))
+        #Detect motor fault and indicate with LED and logging warning
+        current_motor_fault_state = ((current_gpio_state & 0x0F00) >> 8)
+        previous_motor_fault_state = ((previous_gpio_state & 0x0F00) >> 8)
+        if(previous_motor_fault_state != current_motor_fault_state):
+            if(current_motor_fault_state == 0):
+                #Fault state cleared...
+                logging.info("Motor fault cleared")
+                gpio.set_motor_fault_led(False)
+            else:
+                logging.warning("Motor fault indicated: %X" % (current_motor_fault_state))
+                gpio.set_motor_fault_led(True)
+        previous_gpio_state = current_gpio_state
+    else:
+        logging.debug("GPIO handler called; input state unchanged")
+
 def check_battery_state():
      global battery_warning_state
      voltage = power.read_battery_voltage()
@@ -295,22 +330,31 @@ def core_loop():
 
 
   """
-  global battery_check_requested, switch_check_requested, temperature_check_requested
+  global battery_check_requested, switch_check_requested, temperature_check_requested, gpio_check_requested
   while core_running:
       if battery_check_requested:
            check_battery_state()
+           GPIO.output(settings.DEBUG_LED_PIN,GPIO.LOW) #Turn on debug LED
            battery_check_requested = False
-      if temperature_check_requested:
+      elif temperature_check_requested:
            check_temperature()
+           GPIO.output(settings.DEBUG_LED_PIN,GPIO.LOW) #Turn on debug LED
            temperature_check_requested = False
-      if switch_check_requested:
+      elif switch_check_requested:
            check_switch_state()
+           GPIO.output(settings.DEBUG_LED_PIN,GPIO.LOW) #Turn on debug LED
            switch_check_requested = False
-      time.sleep(0.001)
-      #time.sleep(0.05)
+      elif gpio_check_requested:
+           check_gpio_state()
+           GPIO.output(settings.DEBUG_LED_PIN,GPIO.LOW) #Turn on debug LED
+           gpio_check_requested = False
+      else:
+           GPIO.output(settings.DEBUG_LED_PIN,GPIO.HIGH) #Turn on debug LED #Turn debug LED (PI DATA RED on YRL039) off
+           time.sleep(0.001)
 
 def close_program():
     #May want to do graceful exit stuff?
+    core_running = False
     logging.info("Ending yrk.core and spawned processes.")
     reset_all()
     sys.exit()

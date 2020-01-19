@@ -30,28 +30,28 @@ Cannot be at a lower level than FILE_LOGGING_MODE.
 
 """
 
-YRL039_ADDRESS          = 0x39
+YRL039_ADDRESS = 0x39
 '''The I2C address for the ATMega on the YRL039 Power Supply Board (could be reprogrammed to different address if needed).'''
 
 #Note about busses:  RPi4 models have extra i2c busses so numbering for switch starts at I2C_7 [I2C_3 on Pi3 and earlier]
 
-YRL039_BUS              = 14
+YRL039_BUS = 14
 '''The /dev/i2c_XX bus the YRL039 Power Supply board's ATMega is attached to'''
 
-YRL040_BUS              = 13
+YRL040_BUS = 13
 '''The /dev/i2c_XX bus the YRL040 [3.3V] I2C devoices are attached to'''
 
-I2C_5V_BUS              = 11
+I2C_5V_BUS = 11
 '''The PWM driver and the Arduino are on the 5V I2C Bus [bus 4 on switch]'''
 
 #Display settings
-OLED_BUS                = 12
+OLED_BUS = 12
 '''The /dev/i2c_XX bus which the OLED module is attached to'''
 
-HAS_DISPLAY             = True
+HAS_DISPLAY = True
 '''Set to True is OLED module is being used'''
 
-DISPLAY_ROTATED         = False
+DISPLAY_ROTATED = False
 '''Set to True if the OLED module is rotated to flip image'''
 
 #Audio Settings
@@ -59,11 +59,11 @@ AUDIO_VOLUME = 100
 '''Volume to set Alsa mixer to on setup of audio (range 0-100, but 80+ recommended)'''
 
 #PWM settings
-PWM_FREQUENCY           = 50
+PWM_FREQUENCY = 50
 '''PWM (Analog Servo) target frequency in hertz'''
 
 #ADC setting
-ADC_MODELS              = ['voltage','voltage','voltage','voltage','voltage','voltage','inv_pct','voltage']
+ADC_MODELS = ['voltage','voltage','voltage','voltage','voltage','voltage','inv_pct','voltage']
 """List of model types for the 8 ADC inputs
 
    Sensor type in this list.  Should have 8 entries.  Note 7th is for potentiometer.
@@ -74,16 +74,16 @@ ADC_MODELS              = ['voltage','voltage','voltage','voltage','voltage','vo
 
 """
 
-ADC_NAMES               = ['ADC 0','ADC 1','ADC 2','ADC 3','ADC 4','ADC 5','POT','ADC 7']
+ADC_NAMES = ['ADC 0','ADC 1','ADC 2','ADC 3','ADC 4','ADC 5','POT','ADC 7']
 
 #GPIO settings
-USER_GPIO_MODE          = 0xFF
+USER_GPIO_MODE = 0xFF
 '''Initialisation mode for the 8 user GPIO pins [1=Input [with pull-up], 0=Output].'''
 
-USER_GPIO_INVERTED      = 0x00
+USER_GPIO_INVERTED = 0x00
 '''Initialisation inversion state for the 8 user GPIO pins [1=Invert input]'''
 
-USER_GPIO_OUTPUT_STATE  = 0x00
+USER_GPIO_OUTPUT_STATE = 0x00
 '''Initialisation output state for the 8 user GPIO pins'''
 
 #YRK-core settings
@@ -93,7 +93,7 @@ BATTERY_CHECK_PERIOD = 2.0
 TEMPERATURE_CHECK_PERIOD = 2.0
 '''Period (s) between temperature checks'''
 
-ENABLE_BATTERY_MONITOR    = True
+ENABLE_BATTERY_MONITOR = True
 '''If enabled yrk-core.py will display visual+audible warnings when battery low'''
 
 ENABLE_TEMPERATURE_MONITOR = True
@@ -165,7 +165,7 @@ USER_GPIO_ADDRESS       = 0x21                                                  
 RGB_LED_ADDRESS         = 0x45                                                  #I2C Address of U14 TCA6507 LED driver
 SWITCH_INTERRUPT_PIN    = 5                                                     #GPIO pin connected to interrupt out of U4-PCA9555 GPIO [switches]
 GPIO_INTERRUPT_PIN      = 6                                                     #GPIO pin connected to interrupt out of U13-PCA9555 GPIO [user]
-
+DEBUG_LED_PIN = 17                                                              #GPIO pin connected to CATHODE of RED PI_DATA LED on YRL039
 RAMDISK_FILEPATH = "/mnt/ramdisk"
 AUDIO_FILEPATH = "/home/pi/yrk/wav/"
 IMAGE_FILEPATH = "/home/pi/yrk/images/"
@@ -181,6 +181,8 @@ DASH_LAUNCH_COMMAND = ["python","--pid="+ROS_PID_FILE,"yrk_ros","yrk.launch"] #C
 
 
 SWITCH_STATUS_FILENAME = RAMDISK_FILEPATH+"/switch.dat"                         #The most recent switch state [when read following interrupt] is saved to this file for processing by ROS publisher
+GPIO_STATUS_FILENAME = RAMDISK_FILEPATH+"/gpio.dat"                             #The most recent GPIO state [when read following interrupt] is saved to this file for processing by ROS publisher
+
 
 #I2C Lock settings
 I2C_LOCK_FILENAME = RAMDISK_FILEPATH+"/i2c_lock"
