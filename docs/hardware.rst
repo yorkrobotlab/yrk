@@ -88,6 +88,14 @@ Whilst primarily designed to allow I2C brightness control of up to 16 LEDs,  it 
 Analogue servos typically operate with a **20mS** period width *(50Hz PWM frequency)*, and expect a pulse width in the **1ms - 2ms** range [with **1.5ms** being the middle point of the servo rotation].
 The **PCA9685** lets us fix the PWM frequency for all outputs and effectively becomes an I2C servo controller.
 
+.. figure:: /images/pwmpower.jpg
+    :width: 600px
+    :height: 357px
+    :alt: Power routing for 2 banks of PWM analogue servo outputs
+
+    Power connections for the 2-banks of PWM analogue servo outputs
+
+    
 There are 16 available outputs on the YRL040 PCB, located in the middle-top of the PCB.
 Eight of these are available as full 3-pin outputs, where DC power (**+** and **GND**) can be supplied to the servo.
 Most analogue servos come hardwired with a three-pin 0.1” pitch socket attached at the wire tail.
