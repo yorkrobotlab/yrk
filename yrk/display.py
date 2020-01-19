@@ -13,7 +13,11 @@
 There is a header on the YRL040 PCB to which an Adafruit PiOLED 128x32 pixel
 display can be attached, either directly or via a ribbon cable.  This module
 augments the functionality of the ``Adafruit_SSD1306`` library, providing
-functions to display graphics and text on the display.
+functions to display graphics and text on the display.  Bus 5 of the I2C
+switch is routed (exclusively) to the display header.
+
+The init_display() function should be called once before drawing functions are
+used to initialise the display (this is done by core.py if being used).
 
 .. moduleauthor:: James Hilder <github.com/jah128>
 
@@ -81,6 +85,11 @@ def init_display() -> bool :
 def display_image(image):
     """Function to display a 128x32 pixel PIL image on the display
 
+    The display functions use the Python Image Library (Pillow) to store the image
+    bitmaps that are to be displayed.  All other drawing functions generate a PIL
+    image then call this function to display the generated image.
+
+
     Args:
         image (PIL image): The 128x32 PIL image
 
@@ -102,7 +111,7 @@ def warning(text):
     """Function to display a warning graphics alongside a text message on display
 
     Args:
-        text (str): The text message to display
+        text (str): The text message to display (limited to about 8 characters)
 
     """
 
@@ -113,7 +122,10 @@ def warning(text):
 
 # Load and display an image
 def display_image_file(image_filename):
-    """Function to display a 128x32 pixel PBM image from file on the display
+    """Function to display a 128x32 pixel monochrome PBM image from file on the display
+
+    PBM are portable bit-map files; the file size should be 522 bytes (10 bytes header + 512 bytes data).
+    Files can be generated using bitmap editing graphics applications such as Gimp or Adobe Photoshop.
 
     Args:
         image_filename (str): The filename for the 128x32 PBM image
@@ -260,7 +272,10 @@ if __name__ == "__main__":
     logging.info("York Robotics Kit: Display Test")
     init_display()
     display_image_file("/home/pi/yrk/images/yrl-white.pbm")
-    #time.sleep(0.6)
+    time.sleep(0.5)
+    display_image_file("/home/pi/yrk/images/yrk-black.pbm")
+    time.sleep(0.5)
+    display_image_file("/home/pi/yrk/images/yrk-white.pbm")
     time.sleep(4)
     two_line_text_wrapped("IP Address:",get_ip())
     os._exit(1)

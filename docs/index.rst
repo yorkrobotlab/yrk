@@ -12,6 +12,7 @@
    api
    examples
    ros
+   documents
 
 
 *****

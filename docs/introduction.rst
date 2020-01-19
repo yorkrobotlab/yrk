@@ -9,8 +9,11 @@ Introduction
 
 The **York Robotics Kit** is a platform design to allow the Raspberry Pi family of microcomputers
 to control a wide variety of robotics hardware with the minimum extra electronics assembly.
-It comprises a pair of PCBs which attach above a Raspberry Pi SBC [single-board computer].
-This document describes the initial version of the York Robotics Kit, comprising the YRL039 Power Supply Board and the YRL040 YRK Board, which are primarily designed to be used with the Raspberry Pi 4 B and Raspberry Pi 3 B(+) series of computers.
+It comprises a pair of PCBs which attach above a Raspberry Pi SBC *(single-board computer)*.
+This document describes the initial version of the York Robotics Kit, comprising the **YRL039** Power
+Supply Board and the YRL040 YRK Board, which are primarily designed to be used with the
+Raspberry Pi 4 B and Raspberry Pi 3 B(+) series of computers.
+
 This is still very much a prototype and development design and should be regarded as such!
 
 
@@ -24,8 +27,10 @@ Construction
 
    **1.1** *[Dec 2019]* Navigation switch changed to surface-mount model, support for 3.5mm screw terminals for motors added.
 
-This document assumes PCBs have been manufactured and all components assembled **(see separate documentation for PCB construction)**
-The schematic diagrams and layout documents are included as Appendices.
+This document assumes PCBs have been manufactured and all components assembled **(see separate documentation for PCB construction)**.
+The PCBs have been designed using Autodesk Eagle software and are both 2-layer construction, designed to conform to Eurocircuits
+Class 6 design guidelines.
+Information about the Eagle CAD source files, schematic diagrams and layout documents can be found in the :ref:`schematics` section.
 Both PCBs are two-layer boards and designed to be both relatively cheap to manufacture and relatively easy to assemble.
 
 ========  ================
@@ -36,7 +41,7 @@ YRL040    Main YRK PCB
 ========  ================
 
 YRL039 Power Supply
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 
 .. figure:: /images/yrl039.jpg
@@ -66,7 +71,7 @@ All the components except for the fan are mounted to the top-side of the PCB.  T
 
 
 Programming the YRL039
-++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^
 
 The YRL039 uses at ATMega328P microcontroller to control the soft-power switch, make audio tones and report voltage, current and temperature readings using the I2C
 bus.  The standard code is found in the ``atmega_code/yrl039_arduino`` subfolder of the GIT repository; if special functionality is required, such as lowering the
@@ -76,7 +81,7 @@ for both flashing the bootloader to the microcontroller using the **ICSP** inter
 
 
 YRL040 Main PCB
-^^^^^^^^^^^^^^^
+---------------
 
 The main YRL040 PCB has been designed such that the vast majority of electronic components are surface mounted on the underside of the board.
 
@@ -116,7 +121,7 @@ The board contains the following interfaces:
 
 
 Assembly
-^^^^^^^^
+--------
 
 .. figure:: /images/exploded_view.jpg
     :width: 600px
@@ -133,7 +138,7 @@ PCB above the **YRL039** power supply PCB.  It is recommended that *M:F* **(male
 The assembly can be mounted inside a further case, described below, or can be mounted directly onto a chassis or further standoffs.  Consideration of the airflow path should be taken, particularly when fully enclosed inside a robot.  The Raspberry Pi alone can generate a significant amount of heat and rapidly reaches a point at which it will throttle clock speed if it is not adequately cooled.
 
 Case
-^^^^
+----
 
 .. figure:: /images/case.jpg
     :width: 600px
