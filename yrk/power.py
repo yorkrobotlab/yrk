@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # York Robotics Kit Python API
 #
-# Version 0.2
+# Version 0.21
 # Functions for communicating with the YRL039 Power Supply Board
 # James Hilder, York Robotics Laboratory, Jan 2020
 
@@ -131,7 +131,6 @@ def read_int_register(register):
 
 #Command line test prints out voltage, current and temperature readings [will run when yrl039.py is run directly]
 if __name__ == "__main__":
- s.init()
  s.setup_logger("power")
  logging.info("York Robotics Kit: Power supply monitoring test code")
 

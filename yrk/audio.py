@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Functions for audio output
 # James Hilder, York Robotics Laboratory, Jan 2020
 
@@ -171,7 +171,6 @@ audio_thread.daemon=True
 
 #Command line test [will run when audio.py is run directly]
 if __name__ == "__main__":
- s.init()
  s.setup_logger("audio")
  logging.info("YRK Audio Test")
  setup_audio()

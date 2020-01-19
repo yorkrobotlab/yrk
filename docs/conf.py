@@ -19,7 +19,7 @@ copyright = '2020, James Hilder'
 author = 'James Hilder'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.0'
+release = '0.21'
 
 
 # -- General configuration ---------------------------------------------------

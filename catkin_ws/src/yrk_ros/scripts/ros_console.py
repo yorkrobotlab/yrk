@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #
 # York Robotics Kit ROS (Python) API
-# Version 0.1
+# Version 0.21
 # ROS Curses console: A console program for the York Robotics Kit ROS service
-# James Hilder, York Robotics Laboratory, Nov 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: ros_console
@@ -104,7 +104,7 @@ def update_led(increment):
     led_options = len(led.solid_colours) + len(led.body_animations) - 1
     if led_index < 0 : led_index = led_options
     if led_index > led_options : led_index = 0
-    if led_index < len(led.solid_colours) : 
+    if led_index < len(led.solid_colours) :
         index=led_index
         animation=False
     else:
@@ -115,7 +115,7 @@ def update_led(increment):
         response = led_service(index,led_brightness,animation)
         led_string=response.name
     except rospy.ServiceException as e:
-        print ("Service call failed: %s" % e)   
+        print ("Service call failed: %s" % e)
 
 def power_status_callback(power_data):
     power_box.addstr(1,5,"%02.2fV" % power_data.v_battery,curses.A_BOLD);

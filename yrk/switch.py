@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Functions for the switches and buttons connected to U4 [PCA9555 16-way GPIO]
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -132,7 +132,6 @@ def init():
 
 #Test code
 if __name__ == "__main__":
-    s.init()
     s.setup_logger("switch")
     logging.info("York Robotics Kit: Switch test code")
     try:

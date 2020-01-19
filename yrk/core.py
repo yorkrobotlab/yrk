@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Core services
 #
 # In normal use, a single instance of this should be run as a program when
@@ -77,7 +77,6 @@ def gpio_interrupt_callback(pin):
 
 def main():
   #mp.set_start_method('spawn')
-  settings.init()
   settings.setup_logger("core")
   logging.info("York Robotics Kit Core Server [core.py] Started - Version %s" % (settings.VERSION_STRING))
   logging.info("YRK core PID: %d " % (os.getpid()))

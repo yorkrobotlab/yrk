@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Functions for the i2c based motor drivers
 # Datasheet: http://www.ti.com/lit/ds/symlink/drv8830.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -144,7 +144,6 @@ def brake_motor(motor):
 
 #Test code
 if __name__ == "__main__":
-    s.init()
     s.setup_logger("motors")
     logging.info("York Robotics Kit: Motor test code")
     #EG: Set motor 0 to 50% for 3 seconds

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# York Robotics Kit Python API - Version 0.2
+# York Robotics Kit Python API - Version 0.21
 # Functions for the PCA9685PW PWM Driver [Servo Driver]
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -186,7 +186,6 @@ def set_normal_mode():
 
 #Test code
 if __name__ == "__main__":
- s.init()
  s.setup_logger("pwm")
  logging.info("York Robotics Kit: Servo test code")
  set_pwm_frequency(50)

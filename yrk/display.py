@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Functions for the Adafruit PiOLED [SSD1306_128_32] display
 # Datasheet: https://cdn-learn.adafruit.com/downloads/pdf/adafruit-pioled-128x32-mini-oled-for-raspberry-pi.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -267,7 +267,6 @@ def get_ip():
 
 #Command line test [will run when display.py is run directly]
 if __name__ == "__main__":
-    s.init()
     s.setup_logger("display")
     logging.info("York Robotics Kit: Display Test")
     init_display()

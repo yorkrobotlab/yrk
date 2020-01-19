@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # York Robotics Kit Python API
 #
-# Version 0.2
+# Version 0.21
 #
 # Settings and Constants File
 #
@@ -13,7 +13,7 @@
 
 import logging,sys
 
-VERSION_STRING="0.2.200103"
+VERSION_STRING="0.21.200120"
 
 FILE_LOGGING_MODE = logging.DEBUG
 """Set the Python logging level for saved log files.
@@ -30,23 +30,39 @@ Cannot be at a lower level than FILE_LOGGING_MODE.
 
 """
 
-YRL039_ADDRESS = 0x39
-'''The I2C address for the ATMega on the YRL039 Power Supply Board (could be reprogrammed to different address if needed).'''
 
+#BUS Settings
 #Note about busses:  RPi4 models have extra i2c busses so numbering for switch starts at I2C_7 [I2C_3 on Pi3 and earlier]
 
-YRL039_BUS = 14
-'''The /dev/i2c_XX bus the YRL039 Power Supply board's ATMega is attached to'''
+RASPBERRY_PI_MODEL = 4
+"""Sets the Raspberry Pi version being used
 
-YRL040_BUS = 13
-'''The /dev/i2c_XX bus the YRL040 [3.3V] I2C devoices are attached to'''
+   Set to 4 if using Raspberry Pi 4 (recommended)
+   If set to different value, default BUS values are overwritten with values compatible with the earlier Pis.
+
+
+"""
 
 I2C_5V_BUS = 11
 '''The PWM driver and the Arduino are on the 5V I2C Bus [bus 4 on switch]'''
 
-#Display settings
 OLED_BUS = 12
 '''The /dev/i2c_XX bus which the OLED module is attached to'''
+
+YRL040_BUS = 13
+'''The /dev/i2c_XX bus the YRL040 [3.3V] I2C devoices are attached to'''
+
+YRL039_BUS = 14
+'''The /dev/i2c_XX bus the YRL039 Power Supply board's ATMega is attached to'''
+
+#Use Raspberry Pi 3 bus settings
+if (RASPBERRY_PI_MODEL != 4):
+  I2C_5V_BUS = 7
+  OLED_BUS = 8
+  YRL040_BUS = 9
+  YRL039_BUS = 10
+
+#Display settings
 
 HAS_DISPLAY = True
 '''Set to True is OLED module is being used'''
@@ -96,6 +112,7 @@ TEMPERATURE_CHECK_PERIOD = 2.0
 ENABLE_BATTERY_MONITOR = True
 '''If enabled yrk-core.py will display visual+audible warnings when battery low'''
 
+
 ENABLE_TEMPERATURE_MONITOR = True
 '''If enabled yrk-core.py will display visual+audible warnings when cpu\pcb temperature high'''
 
@@ -140,6 +157,9 @@ USE_DIP_FUNCTIONS = True
 USE_DIP_LEDS = True
 '''If true, yrk-core will set DIP LEDs based on program state'''
 
+YRL039_ADDRESS = 0x39
+'''The I2C address for the ATMega on the YRL039 Power Supply Board (could be reprogrammed to different address if needed).'''
+
 
 #Set battery levels [if necessary set manual overrides here]
 if BATTERY_CELLS == 2:
@@ -163,6 +183,7 @@ AUDIO_ON_GPIO_PIN = 16                                                          
 SWITCH_GPIO_ADDRESS     = 0x20                                                  #I2C Address of U4 PCA9555 GPIO expender used for switches etc
 USER_GPIO_ADDRESS       = 0x21                                                  #I2C Address of U13 PCA9555 GPIO expender used for user GPIO etc
 RGB_LED_ADDRESS         = 0x45                                                  #I2C Address of U14 TCA6507 LED driver
+ADC_ADDRESS             = 0x48                                                  #The I2C address for the ADS7830
 SWITCH_INTERRUPT_PIN    = 5                                                     #GPIO pin connected to interrupt out of U4-PCA9555 GPIO [switches]
 GPIO_INTERRUPT_PIN      = 6                                                     #GPIO pin connected to interrupt out of U13-PCA9555 GPIO [user]
 DEBUG_LED_PIN = 17                                                              #GPIO pin connected to CATHODE of RED PI_DATA LED on YRL039
@@ -199,18 +220,6 @@ SMALL_FONT = '/home/pi/yrk/font/small_font.ttf'
 SMALL_BOLD = '/home/pi/yrk/font/small_bold.ttf'
 LARGE_FONT = '/home/pi/yrk/font/yrk_font.ttf'
 
-#Unchecked
-LED_DRIVER_BUS          = 9                                                     #The bus which the TCA6507 LED driver is attached to [i2c_9 on YRL028]
-SWITCH_BUS              = 9                                                     #The bus which the YRL015 switch board is attached to [i2c_9 on YRL028]
-ADC_BUS                 = 9                                                     #The bus which the ADS7830 ADC is connected to [i2c_9 on YRL028]
-ADC_ADDRESS             = 0x48                                                  #The I2C address for the ADS7830
-MOTORS_BUS              = 7
-ARDUINO_BUS             = 10
-ARDUINO_ADDRESS         = 0x57
-
-
-POLL_PERIOD             = 1.0                                                   #Period (seconds) at which to update sensor readings
-
 
 BUS_ERROR       = False                                                         #Will be set to true if there is a problem initialising i2c busses
 ENABLE_PROGRAMS = True
@@ -225,45 +234,6 @@ ROBOT_SENSOR_MODEL = [
     ['analog-3','2y0a21',312,14],
     ['analog-4','2y0a21',342,14]
 ]
-
-
-SENSOR_PORT_LIST        = [3,4,5]                                               #The I2C ports which will be scanned for sensors
-
-
-
-# The following settings are only used when a YRL015 switch board is NOT connected
-ENABLE_DEMO_MODE        = False
-ENABLE_STATS_MODE       = False
-ENABLE_AUTOSENSE_MODE   = True
-
-
-
-# The following are I2C and register addresses and other parameters for the YRL013 and YLR019 sensor boards
-GRIDEYE_ADDRESS         = 0x69
-GAS_SENSOR_GPIO_ADDRESS = 0x41
-GAS_SENSOR_ADC_ADDRESS  = 0x23
-HUMIDITY_SENSOR_ADDRESS = 0x27
-SENSOR_LED_ADDRESS_1    = 0x6A                                                  # I2C Address of the TLC59116 LED Driver on the YRL019 Sensor
-SENSOR_LED_ADDRESS_2    = 0x69
-TOF_SENSOR_ADDRESS      = 0x29                                                  # I2C Address of the VL53L0X Time-of-flight Sensor
-IR_ADDRESS 	            = 0x60                                                  # I2C Address of the VCNL4040 IR Sensor
-SENSOR_ADC_ADDRESS      = 0x4d                                                  # I2C Address of the MCP3221 ADC
-EPROM_ADDRESS           = 0x50                                                  # I2C Address of the EEPROM
-COLOUR_ADDRESS          = 0x10                                                  # I2C Address of the VEML6040 Colour Sensor
-ALS_CONF_REG            = 0x00
-PS_CONF1_REG            = 0x03
-PS_CONF3_REG            = 0x04
-PS_DATA_REG             = 0x08
-ALS_DATA_REG            = 0x09
-WHITE_DATA_REG          = 0x0A
-RED_REGISTER 	        = 0x08
-GREEN_REGISTER 	        = 0x09
-BLUE_REGISTER 	        = 0x0A
-WHITE_REGISTER 	        = 0x0B
-WHITE_BYTE 	            = 0x40
-COMMAND_BYTE 	        = 0x04
-COLOUR_SENSOR_SENSITIVITY = 0x00                                                #Range 0 - 5 [40ms, 0.25168 lux/count  to 1280ms,
-NOISE_FLOOR = 4000
 
 # The locations for the sensor and system file logs
 system_datafilename="/ramdisk/system.csv"
@@ -289,13 +259,3 @@ def setup_logger(filename):
     consoleHandler.setFormatter(consoleFormatter)
     consoleHandler.setLevel(CONSOLE_LOGGING_MODE)
     rootLogger.addHandler(consoleHandler)
-
-def init():
-    global initial_led_brightness
-    global max_brightness
-    global sensor_list
-    global default_poll_period
-    sensor_list = []
-    initial_led_brightness = 0.3                                                  #Multiplied by max_brightness
-    max_brightness = 0.3                                                          #Brightness limit for LEDs.  Range 0-1.  1 is very bright and may cause power\heat issues if not used carefully...
-    default_poll_period = POLL_PERIOD

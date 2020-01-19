@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Functions for the TCA6507 LED driver [front RGB LEDs]
 # Datasheet: http://www.ti.com/lit/ds/symlink/tca6507.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -222,7 +222,6 @@ def set_colour_solid(index):
 
 #Command line test [will run when led.py is run directly]
 if __name__ == "__main__":
- s.init()
  s.setup_logger("led")
  logging.info("York Robotics Kit: LED test code")
  for i in range(16):

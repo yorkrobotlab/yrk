@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Functions for the GPIO expansion and switches outputs from U13 [PCA9555 16-way GPIO]
 # Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -152,7 +152,6 @@ def init():
 
 #Test code
 if __name__ == "__main__":
-    s.init()
     s.setup_logger("gpio")
     logging.info("York Robotics Kit: User GPIO test code")
     try:

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# York Robotics Kit Python API - Version 0.2
+# York Robotics Kit Python API - Version 0.21
 # Functions for the ADS7830 8-bit Analog:Digital Converter
 # Datasheet: http://www.ti.com/lit/ds/symlink/ads7830.pdf
 # James Hilder, York Robotics Laboratory, Jan 2020
@@ -100,7 +100,6 @@ def get_model_value(raw_value,sensor_model):
 
 #Test code
 if __name__ == "__main__":
- s.init()
  s.setup_logger("adc")
  logging.info("York Robotics Kit: A\D Converter test code")
  for channel in range (8):

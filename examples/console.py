@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # York Robotics Kit Python API
-# Version 0.2
+# Version 0.21
 # Curses console: A console program for the York Robotics Kit
 # James Hilder, York Robotics Laboratory, Jan 2020
 

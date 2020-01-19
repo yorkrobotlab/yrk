@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # York Robotics Kit Python API
-# Version 0.1
+# Version 0.21
 # Self-test Python Script
-# James Hilder, York Robotics Laboratory, Oct 2019
+# James Hilder, York Robotics Laboratory, Jan 2020
 
 """
 .. module:: selftest
@@ -15,7 +15,6 @@
 import logging, sys
 import yrk.settings as settings
 
-settings.init()
 log_filename = "selftest"
 settings.setup_logger(log_filename)
 
