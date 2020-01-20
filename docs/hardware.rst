@@ -95,7 +95,7 @@ The **PCA9685** lets us fix the PWM frequency for all outputs and effectively be
 
     Power connections for the 2-banks of PWM analogue servo outputs
 
-    
+
 There are 16 available outputs on the YRL040 PCB, located in the middle-top of the PCB.
 Eight of these are available as full 3-pin outputs, where DC power (**+** and **GND**) can be supplied to the servo.
 Most analogue servos come hardwired with a three-pin 0.1” pitch socket attached at the wire tail.
@@ -198,6 +198,37 @@ Channel 7 of the ADC is routed to the left pin of a 2mm pitch pin-header below t
 channel 0-5 and 7 can be used as a general purpose ADC input (8-bit, with a 2.5V reference voltage) by using the
 raw reading value.  There is also the potential to use any of the 8 available analogue inputs on the ATMega microcontroller which offers 10-bit
 resolution *(see section on Arduino below)*.
+
+I2C Devices
+-----------
+
+The I2C interface is widely used for many robotics sensors and accessories.  The YRK uses a **PCA9548** I2C
+switch, which splits the master I2C bus into 8 individual busses, allowing the use of repeated I2C addresses
+across multiple ports.  This allows, for example, the use of multiple I2C distance sensors which share the
+same I2C address, by connecting them to different busses.  Most I2C devices (capable of operating in **400KHz**
+*fast mode*) can be attached provided they do not use the address **0x70** which is used by the switch.
+
+
+.. figure:: /images/i2c.jpg
+    :width: 600px
+    :height: 181px
+    :alt: Closeup of I2C (channel 0 - 3) Picoblade and 0.1" connectors
+
+    Closeup of I2C (channel 0 - 3) Picoblade and 0.1" connectors
+    
+
+The I2C switch has a kernel-level driver, meaning that the individual switched busses appear to the user as
+different I2C root devices (each has its own file handle at ``/dev/`i2c-XX``).  The actual address of the bus
+is different when used on the Raspberry Pi 4 hardware and earlier versions, as the Raspberry Pi 4 hardware
+can support more native I2C busses (not used in the **YRK**).  On the Raspberry Pi 4, the switched busses map
+to file descriptors ``/dev/i2c-6`` to ``/dev/i2c-13`` from channel 0 to 7, and to descriptors ``/dev/i2c-3`` to ``/dev/i2c-10``
+on earlier version of the Pi.
+
+The first four channels are unused and are intended for user additions.  These SDA and SCL signals for these channels are each routed to
+unpopulated 0.1" pitch holes on the YRK PCB, and also to 4-pin Molex Picoblade headers.  The Picoblade headers (1.25mm pitch) include a
+5V and GND signal.  These are directly compatible with sensor boards developed at York such as the **YRL013** multi-sensor board and the
+**YRL019** thermal-imaging sensor board.  Note that all i2c channels except channel 4 are pulled-up to 3.3V; channel 4 is
+utilised by the PWM driver and the Arduino *(see below)* and is pulled-up to 5V.
 
 
 Arduino

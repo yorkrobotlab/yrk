@@ -45,6 +45,7 @@ This table contains internet URLs to most of the core intergrated circuits and m
 Component         Part Name           Datasheet URL
 ================  ==================  ====================================================================================
 Arduino IC        ATMega328P          `<https://www.microchip.com/wwwproducts/en/ATmega328p>`_
+I2C Switch IC     PCA9548             `<http://www.ti.com/lit/ds/symlink/pca9548a.pdf>`_
 Serial:USB IC     FTDI FT232RL        `<https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232R.pdf>`_
 Power Supply IC   TPS82130            `<http://www.ti.com/lit/ds/symlink/tps82130.pdf>`_
 GPIO Expander IC  PCA9555             `<https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf>`_
