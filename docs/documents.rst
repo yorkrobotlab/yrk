@@ -52,6 +52,7 @@ GPIO Expander IC  PCA9555             `<https://www.nxp.com/docs/en/data-sheet/P
 LED Driver IC     TCA6507             `<https://www.ti.com/lit/ds/symlink/tca6507.pdf>`_
 Motor Driver IC   DRV8830             `<https://www.ti.com/lit/ds/symlink/drv8830.pdf>`_
 PWM (Servo) IC    PCA9685             `<https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf>`_
+Audio Amp IC      TPA2005             `<http://www.ti.com/lit/ds/symlink/tpa2005d1.pdf>`_
 Distance Sensor   GP2Y0A21            `<https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y0a21yk_e.pdf>`_
 Distance Sensor   GP2Y0A41            `<https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y0a41sk_e.pdf>`_
 ================  ==================  ====================================================================================

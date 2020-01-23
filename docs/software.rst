@@ -21,7 +21,7 @@ document.  In the default image, the username is **pi** and the password is **ro
 YRK Raspbian
 ------------
 
-This document is written for **YRK Raspbian Build 16/01/2020**.  This build of Raspbian contains
+This document is written for **YRK Raspbian Build 23/01/2020**.  This build of Raspbian contains
 the following software installations:
 
 * Raspbian Version: Buster *(Raspbian GNU/Linux 10)*.  Output of ``lsb_release -a``
@@ -46,7 +46,7 @@ changes to ``/etc/network/interfaces`` before booting *(by editing the SD card i
 Linux system)*, or connect the Pi to a display and configure networking.  Obviously in normal use
 the YRK is intended to be connected to remotely using SSH or VNC etc.
 
-On first boot of a clean install of **YRK Raspbian Build 16/01/2020** it is recommended
+On first boot of a clean install of **YRK Raspbian Build 23/01/2020** it is recommended
 to update the system.  Make sure all DIP switches are in their **OFF** **(down)** position.
 From the ``/home/pi`` folder execute the following script::
 

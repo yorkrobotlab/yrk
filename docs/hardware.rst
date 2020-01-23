@@ -12,7 +12,7 @@ pin-out diagram is shown below, a more detailed view is available in the ``Docum
 
 .. figure:: /images/pinout.jpg
     :width: 600px
-    :height: 772px
+    :height: 756px
     :alt: Pin-out and wiring diagram for York Robotics Kit
 
     Pin-out and wiring diagram for York Robotics Kit
@@ -215,7 +215,7 @@ same I2C address, by connecting them to different busses.  Most I2C devices (cap
     :alt: Closeup of I2C (channel 0 - 3) Picoblade and 0.1" connectors
 
     Closeup of I2C (channel 0 - 3) Picoblade and 0.1" connectors
-    
+
 
 The I2C switch has a kernel-level driver, meaning that the individual switched busses appear to the user as
 different I2C root devices (each has its own file handle at ``/dev/`i2c-XX``).  The actual address of the bus
@@ -364,4 +364,20 @@ based solution.
 Loudspeaker
 -----------
 
-The loudspeaker....
+The YRK includes a monoaural amplifier attached to one of the PWM outputs of the Raspberry Pi **(GPIO12)**.  When correctly configured, the
+Raspberry Pi (using the **ALSA** audio system) can be set to play audio using its internal PWM.  The **YRL040** PCB includes a Texas Instruments
+`TPA2005 <http://www.ti.com/lit/ds/symlink/tpa2005d1.pdf>`_ class-D audio amplifier IC, which is capable of producing up to 1.4W when using an 8-ohm
+speaker.  It may be possible to use lower impedance speakers (down to 4-ohm) but note the amplifier is using the **5V_AUX** and would be operating
+out-of-specification at 4-ohms.  Audio generated from PWM outputs is generally very noisy and low in fidelity but is adequate to generate simple
+sounds and speech synthesis.
+
+.. figure:: /images/speaker.jpg
+    :width: 260px
+    :height: 292px
+    :alt: Location of speaker connection at bottom left of board
+
+    Location of the speaker connection at bottom left of YRL040 PCB
+
+The speaker output is routed to two pin holes near the bottom-left corner of the **YRL040 PCB** *(being mono the phase of the speaker
+doesn't matter)*.  A 2-pin, 2mm pitch header can be soldered in place here to make attaching a removable speaker easier; it hasn't been done by default as
+the case has space for a 17mm x 11mm speaker to be connected which would be hard-wired to the underside of the *YRL040* PCB.
