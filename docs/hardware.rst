@@ -70,7 +70,10 @@ such as the widely-available 3mm shafted **micro-metal gear motors**.  Before us
 PSU)* what the stall and no-load currents at **5V**.
 
 The holes on the unpopulated PCB allow the motors to be connected to either **Wago** push-fit terminals or **(on PCB version 1.1)** 3.5mm pitch screw terminals.
-With either connector, a remaining pair of holes will be accessible on the PCB should a direct soldered lead be required.
+With either connector, a remaining pair of holes will be accessible on the PCB should a direct soldered lead be required.  The motor driver can detect fault
+conditions (undervoltage, overvoltage and overtemperature events) and when the ``yrk.core`` program is running these will be indicated by the red fault LED above
+the top-right motor output.  If persistent fault conditions check the motor is working correctly and doesn't draw excessive current for the design; micro-metal-gear
+motors are relatively delicate.  
 
 
 Servos
