@@ -111,3 +111,87 @@ the *ROS* service, a web service and a demo program.  This functionality is prov
 * Switch 2 enables the web service.  This enables a **Flask** webserver running a **Dash** site with **DAQ**
   components and this manual.  By default at ``localhost:8080``.
 * Switch 3 enables the demo program.  [To do...]
+
+Basic Programming Examples
+--------------------------
+
+Before using the ROS infrastructure to program the **YRK** it is worth considering some very simple
+low-level example programs.  We shall look at how to write very basic programs that access low-level
+features; it is recommended that the core program, normal Python services and ROS services are **not**
+running when programming like this.  Remember that if the core program isn't running, automatic battery,
+temperature and fault monitoring will not be running.
+
+The code examples in the section are all Python programs that should be run in the **yrk** virtual
+environment (this should be enabled by default in the image and is indicated by a ``(yrk)`` before the filepath
+in the terminal console).  The examples below can be written in a text-editor, or can be entered directly into
+the *Thonny* Python IDE using the VNC connection.  For proper code development working on the Pi over VNC isn't
+recommended but it can be useful for quick tests such as this.
+
+Motors Example
+^^^^^^^^^^^^^^
+
+The first example program below sets the motor connected to driver 0 *(labelled as Motor 1 on the PCB)* to 50 percent forward
+duty-cycle.  We import the :mod:`yrk.motors` module from the **yrk** library as ``motors`` and call the :meth:`yrk.motors.set_motor_speed` method::
+
+  import yrk.motors as motors
+  motors.set_motor_speed(0,0.5)
+
+
+As the **YRK** is designed to be flexible in robot topology, the :mod:`yrk.motors` is limited to functions that affect one motor at a time,
+with the exception of :meth:`yrk.motors.stop_all_motors` which sets all 4 outputs to their stopped, high-impedance state.  The following code
+shows an example of how simple drive functions for a two-wheels, skid-steered robot, with motors connected to driver 0 and 3 *(labelled as Motor 1
+and Motor 4 on the PCB)*.  By adjusting the speeds and the sleep times, it should be possible to make the robot move in a square path::
+
+  import yrk.motors as motors
+  import time
+
+  def forwards(speed):
+        motors.set_motor_speed(0,speed)
+        motors.set_motor_speed(3,speed)
+
+  def turn(speed):
+        motors.set_motor_speed(0,speed)
+        motors.set_motor_speed(3,-speed)
+
+  def brake_motors():
+        motors.brake_motor(0)
+        motors.brake_motor(3)
+
+  for i in range(4):
+        forwards(0.5)
+        time.sleep(0.5)
+        brake_motors()
+        time.sleep(0.1)
+        turn(0.5)
+        time.sleep(0.5)
+        brake_motors()
+        time.sleep(0.1)
+
+   motors.stop_all_motors()
+
+
+ADC Example
+^^^^^^^^^^^
+
+The module :mod:`yrk.adc` contains the methods for reading the analog:digital converter.  The module :mod:`yrk.led` contains
+methods for controlling the RGB LEDs.  We can combine all three to use the on-board potentiometer *(attached to ADC channel 6)*
+to set the motor speed for driver 0 and set the LED brightness proportional to speed::
+
+  import yrk.adc as adc, yrk.motors as motors, yrk.led as led, time
+  while(True):
+        #Read raw value of pot. 255 is fully_left, 0 is fully_right
+        pot_value = adc.read_adc(6)
+        #Set motor 0 speed to be fully backwards [-1.0] at pot=fully_left and
+        #fully forwards [1.0] at pot=fully_right
+        motors.set_motor_speed(0, 1.0 - (0.007843 * pot_value))
+        #Set led brightness to be proportional to speed (range is 0-15)
+        led.set_brightness((abs(128-pot_value) + 6) >> 3)
+        #Make the LEDs white
+        led.set_colour_solid(7)
+        #Add a short wait to keep system responsive
+        time.sleep(0.01)
+
+
+.. warning::
+   This code will spin motor 0 and set the LEDs to a high brightness unless the potentiometer
+   is very close to its central position.
